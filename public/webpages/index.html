@@ -16,6 +16,7 @@
 				<h1>Tetris Wars</h1>
 				<br/>
 			</div>
+			
 			<!---------- NAVIGATION MENU BEGINS ---------->
 			<nav class = "navbar navbar-inverse">
 				<div class = "container-fluid">
@@ -31,20 +32,64 @@
 			</nav>
 			<!---------- NAVIGATION MENU ENDS ---------->
 			
-			<div id="content">
-				<h2>Join Lobby</h2>
+			<div class="content">
+				<h2>Lobbies</h2>
 				<br/>
-				<p>Available lobbies:</p>
-				<div id="lobbyBox">
+				<div class="customBox">
+					<table class="table">
+						<thead>
+						  <tr>
+							<th>Lobbyname</th>
+							<th>Users in Lobby</th>
+							<th>Max Users</th>
+							<th>Need Password</th>
+							<th></th>
+						  </tr>
+						</thead>
+						<tbody>
+						  <tr>
+							<td>The Dragons</td>
+							<td>5</td>
+							<td>7</td>
+							<td>No</td>
+							<td><a href = "game.html"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+						  </tr>
+						  <tr>
+							<td>Poop</td>
+							<td>4</td>
+							<td>5</td>
+							<td>Yes</td>
+							<td><a href = "game.html"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+						  </tr>
+						  <tr>
+							<td>Bob is awesome</td>
+							<td>6</td>
+							<td>7</td>
+							<td>No</td>
+							<td><a href = "game.html"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+						  </tr>
+						  <tr>
+							<td>Noobs here</td>
+							<td>6</td>
+							<td>7</td>
+							<td>No</td>
+							<td><a href = "game.html"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+						  </tr>
+						</tbody>
+					</table>
 					<script src = "../script/joinLobby.js"></script>
 					<ul id = "allLobbysList"></ul>
 				</div>
 				
 				<div id = "createLobby">						
-					<input type = "button" value = "Create new lobby" id = "NewLobbyButton"> </input>
+					<!-- <input type = "button" value = "Create new lobby" id = "NewLobbyButton"> </input> -->
+					<a href = "createLobby.html"><button type="button" class="btn btn-primary" id = "NewLobbyButton">Create lobby</button></a>
 					<script src = "../script/createLobby.js"></script>
 				</div>	
 			</div>
+			<footer>
+				By Jessica & Adrian
+			</footer>
 		</div>	
 	</body>	
 </html>
