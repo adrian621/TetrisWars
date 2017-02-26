@@ -1,0 +1,13 @@
+body{
+//background-color: blue;
+}
+
+ul#allLobbysList{
+	list-style-type: none;
+}
+
+#lobbyBox{
+	background-color: grey;
+	padding: 20px;
+	//color: white;
+}

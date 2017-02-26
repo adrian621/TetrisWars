@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<title>Tetris Wars</title>
+		<script src="/socket.io/socket.io.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.
+		com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../style/style.css" />
+		<link rel = "stylesheet" href = "../style/joinlobby.css"/>
+
+	</head>
+
+	<body>
+		<div id="container">
+			<div id="header">
+				<br/>
+				<h1>Tetris Wars</h1>
+				<br/>
+			</div>
+			<!---------- NAVIGATION MENU BEGINS ---------->
+			<nav class = "navbar navbar-inverse">
+				<div class = "container-fluid">
+					<ul class = "nav navbar-nav">
+						<li><a href = "index.html">Play</a></li>
+						<li> <a href = "account.html">Account</a></li>
+					</ul>
+					<ul class = "nav navbar-nav navbar-right">
+						<li><a href = "#"><span class = "glyphicon glyphicon-user"></span> Sign Up </a></li>
+						<li><a href = "#"><span class = "glyphicon glyphicon-log-in"></span> Login </a></li>
+					</ul>
+				</div>
+			</nav>
+			<!---------- NAVIGATION MENU ENDS ---------->
+			
+			<div id="content">
+				<h2>Join Lobby</h2>
+				<br/>
+				<p>Available lobbies:</p>
+				<div id="lobbyBox">
+					<script src = "../script/joinLobby.js"></script>
+					<ul id = "allLobbysList"></ul>
+				</div>
+				
+				<div id = "createLobby">						
+					<input type = "button" value = "Create new lobby" id = "NewLobbyButton"> </input>
+					<script src = "../script/createLobby.js"></script>
+				</div>	
+			</div>
+		</div>	
+	</body>	
+</html>
