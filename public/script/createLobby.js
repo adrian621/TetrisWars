@@ -2,6 +2,15 @@ var socket = io();
 var lobbyNumber;
 var newLobbyButton = document.getElementById("NewLobbyButton");
 
+
+/*var joinLobbyButtons = document.getElementsByClassName("NewLobbyButton");
+
+for (var i=0; i < joinLobbyButtons.length; i++) {
+	photo[i].onclick = function(){	
+		socket.emit('lobby', {lobbyName:"username", type:"newLobby"});	
+	}
+} */
+
 newLobbyButton.onclick = function(){	
 	socket.emit('lobby', {lobbyName:"username", type:"newLobby"});	
 }
