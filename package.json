@@ -13,6 +13,21 @@
     "socket.io": "*",
     "express": "*",
     "body-parser": "*",
-    "express-handlebars": "~3.0.0"
+    "express-handlebars": "~3.0.0",
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "connect-flash": "*",
+    "cookie-parser": "*",
+    "express": "*",
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-session": "*",
+    "express-validator": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*"
+
   }
 }
