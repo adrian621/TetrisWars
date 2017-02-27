@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<title>Tetris Wars</title>
+		<script src="/socket.io/socket.io.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.
+		com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="/style/style.css" />
+		<link rel = "stylesheet" href = "/style/joinlobby.css"/>
+
+	</head>
+
+	<body>
+		<div id="container">
+			<div id="header">
+				<br/>
+				<h1>Tetris Wars</h1>
+				<br/>
+			</div>
+			<nav class = "navbar navbar-inverse">
+				<div class = "container-fluid">
+					<ul class = "nav navbar-nav">
+						<li><a href = "/">Play</a></li>
+						<li> <a href = "account">Account</a></li>
+					</ul>
+					<ul class = "nav navbar-nav navbar-right">
+						{{#if user}}
+
+						<li><a href = "logout"><span class = "glyphicon glyphicon-log-out"></span> LogOut </a></li>
+
+						{{else}}
+							<li><a href = "register"><span class = "glyphicon glyphicon-user"></span> Sign Up </a></li>
+						<li><a href = "login"><span class = "glyphicon glyphicon-log-in"></span> Login </a></li>
+						{{/if}}
+					</ul>
+				</div>
+			</nav>
+	{{{body}}}
+</body>
