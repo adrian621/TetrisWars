@@ -11,7 +11,7 @@ lobby_server.lobbyFunctions = function(client, message, io){
 		case "userIsReady": userIsReady(io, message); break;
 		case "userIsNotReady": userIsNotReady(io, message); break;
 		case "userLeavedLobby": userLeavedLobby(client, message); break;
-		
+
 		//case "gameOver": gameOverServer(io, message); break;
 	}
 };
@@ -45,7 +45,7 @@ lobby = function(id, randomNumbers){
 		randomNumbers: randomNumbers,
 		lobbyUsers: [],
 		isActive: false,
-		maxUsers: 5,	
+		maxUsers: 5,
 		boards: [],
 		clients: [],
 	};
@@ -53,7 +53,7 @@ lobby = function(id, randomNumbers){
 }
 
 //----- Lobby Functions -----//
-newLobby = function(client, data){		
+newLobby = function(client, data){
 	var id = addNewLobby();
 	console.log("New lobby with ID %s created.", id);
 	client.emit('newLobby', {lobbyNumber:id,response:true});
@@ -61,16 +61,16 @@ newLobby = function(client, data){
 
 removeClients = function(lobbies){
 for(var i = 0; i < lobbies.length; i ++){
-lobbies[i].clients = [];	
+lobbies[i].clients = [];
 }
-	
+
 }
-	
+
 getLobbyList = function(client){
 	var lobbyListNoClients = allLobbies;
 	removeClients(lobbyListNoClients);
 	console.log('skickar lobbyList' + allLobbies[0].id);
-	client.emit('lobbyList',{lobbyList: lobbyListNoClients});		
+	client.emit('lobbyList',{lobbyList: lobbyListNoClients});
 }
 
 gameSetup = function(io, client, data){
@@ -83,7 +83,7 @@ addNewLobby = function(){
 	var id = (Math.random() * 700 ).toFixed();
 	var randomNumbers = generateRandomBlocks();
 	lobby(id, randomNumbers);
-	return id;	
+	return id;
 }
 
 getLobbyIndexFromId = function(id){
@@ -91,12 +91,12 @@ getLobbyIndexFromId = function(id){
 		if(allLobbies[i].id == id){
 			return i;
 		}
-	}	
+	}
 }
 
 lobbyIsEmpty = function(data){
 	var index = getLobbyIndexFromId(data.id);
-	
+
 	if (allLobbies[index].lobbyUsers.length == 0){
 		return true;
 	}else{
@@ -106,7 +106,7 @@ lobbyIsEmpty = function(data){
 
 removeLobby = function(data){
 	var removed = false;
-	
+
 	for(var i = 0; i < allLobbies.length; i++){
 		if(removed){
 			allLobbies[i-1] = allLobbies[i];
@@ -122,7 +122,7 @@ removeLobby = function(data){
 userIsReady = function(io, data){
 	var lobby = allLobbies[getLobbyIndexFromId(data.id)];
 	if(!lobby.isActive){
-		userInLobbyIsReady(data);		
+		userInLobbyIsReady(data);
 		if(allUsersInLobbyReady(data)){
 			lobby.randomNumbers = generateRandomBlocks();
 			game_server.emitToLobby(lobby, {type: 'startGame', users:getUsersFromLobby(data), id:data.id, randomNumbers: lobby.randomNumbers});
@@ -137,7 +137,7 @@ userIsReady = function(io, data){
 userIsNotReady = function(io, data){
 	var lobby = allLobbies[getLobbyIndexFromId(data.id)];
 	if(!lobby.isActive){
-		userInLobbyIsNotReady(data);		
+		userInLobbyIsNotReady(data);
 		game_server.emitToLobby(lobby, {type: 'userIsNotReady', user: data.user, id: data.id});
 	}
 }
@@ -157,8 +157,8 @@ getUserFromId = function(id, indexLobby){
 		if(allLobbies[indexLobby].lobbyUsers[i].id == id-1){
 			return i;
 		}
-	}	
-} 
+	}
+}
 
 addUserToLobby = function(client, data){
 	var index = getLobbyIndexFromId(data.id);
@@ -168,7 +168,7 @@ addUserToLobby = function(client, data){
 
 removeUserFromLobby = function(data){
 	var indexLobby = getLobbyIndexFromId(data.id);
-	var indexUser = allLobbies[indexLobby].lobbyUsers.indexOf(data.user); 
+	var indexUser = allLobbies[indexLobby].lobbyUsers.indexOf(data.user);
 	allLobbies[indexLobby].lobbyUsers.splice(indexUser, 1);
 }
 
@@ -181,18 +181,18 @@ getUsersFromLobby = function(data){
 userInLobbyIsReady = function(data){
 	var indexLobby = getLobbyIndexFromId(data.id);
 	var indexUser = getUserFromId(data.user, indexLobby);
-	allLobbies[indexLobby].lobbyUsers[indexUser].isReady = true; 
+	allLobbies[indexLobby].lobbyUsers[indexUser].isReady = true;
 }
 
 userInLobbyIsNotReady = function(data){
 	var indexLobby = getLobbyIndexFromId(data.id);
 	var indexUser = getUserFromId(data.user, indexLobby);
-	allLobbies[indexLobby].lobbyUsers[indexUser].isReady = false; 
+	allLobbies[indexLobby].lobbyUsers[indexUser].isReady = false;
 }
 
 allUsersInLobbyReady = function(data){
 	var indexLobby = getLobbyIndexFromId(data.id);
-	
+
 	for(var i = 0; i < allLobbies[indexLobby].lobbyUsers.length; i++){
 		if (allLobbies[indexLobby].lobbyUsers[i].isReady == false){
 			return false;
@@ -207,7 +207,7 @@ getRandomNumbersFromLobby = function(data){
 	var index = getLobbyIndexFromId(data.id);
 	return allLobbies[index].randomNumbers;
 }
-	
+
 generateRandomBlocks = function(){
 	var randomNumbers = [];
 	for(i = 0; i < 10000; i++){

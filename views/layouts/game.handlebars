@@ -1,1 +1,37 @@
-game!
+
+<div class="content">
+  <div id="gameHeader">
+    <div id="lobbyname">
+      <h2>The flying dragon</h2>
+    </div>
+
+    <div id="maxplayers">
+      Maxusers: 6
+    </div>
+    <br/>
+    <br/>
+  </div>
+
+  <div id="canvas">
+    <canvas id="game" width="800" height="400" style="border:1px solid #000000;"></canvas>
+  </div>
+
+  <br/>
+  <button type="button" class="btn btn-primary" id = "HowToPlay">How to play</button>
+</div>
+
+<footer>
+  {{#if lobbyNumber}}
+    <div class="alert alert-success">{{lobbyNumber}}</div>
+  {{/if}}
+  By Jessica & Adrian
+</footer>
+</div>
+<!-- <script src="../script/createLobby.js"></script> -->
+<script src="/script/gameCore.js"></script>
+<script src="/script/gameClient.js"></script>
+<style>
+#content{
+  padding-top: 80px;
+}
+</style>
