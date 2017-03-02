@@ -12,13 +12,14 @@ router.get('/login', ensureNotauth, function(req, res){
   res.render('login');
 });
 router.get('/account', ensureauth ,function(req, res){
-  //console.log(req.originalUrl);
   res.render('account');
 
 });
 router.get('/createLobby', ensureauth ,function(req, res){
   res.render('createLobby');
 });
+
+
 
 function ensureNotauth(req, res, next){
   if(!req.isAuthenticated()){
@@ -28,7 +29,6 @@ function ensureNotauth(req, res, next){
     res.redirect('/');
   }
 }
-
 function ensureauth(req, res, next){
 if(req.isAuthenticated()){
   return next();
@@ -39,7 +39,6 @@ else{
   }
 }
 
-
 router.post('/register', function(req, res){
     var name = req.body.name;
     var email = req.body.email;
@@ -49,6 +48,8 @@ router.post('/register', function(req, res){
 
     //validation
     req.checkBody('name', 'Name is required').notEmpty();
+    //req.checkBody('username', 'Username exist').usernameNotExist();
+
     req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('email', 'Email is invalid').isEmail();
     req.checkBody('username', 'username is required').notEmpty();
@@ -56,32 +57,44 @@ router.post('/register', function(req, res){
     req.checkBody('password2', 'passwords do not match').equals(req.body.password);
 
 
-    //check through database aswell
-    //User.checkAvil(username, email (err, res){
-    //if(err) throw err;
-      //if(!res)
-      //req.flash('error_msg', 'Username taken');
-  //});
-
     var errors = req.validationErrors();
+    //check through database aswell
 
     if(errors){
       res.render('register', {errors:errors});
     }
     else{
-      var newUser = new User({
-        name: name,
-        eamil: email,
-        username: username,
-        password: password
-      });
 
-      User.createUser(newUser, (err, user) => {
+      User.getUserByUserName(username, (err, user) =>{
         if(err) throw err;
-        console.log(err);
+        if(user){
+          res.render('register', {errors: [{param: 'username', msg: 'Username is already taken', value: '' }]});
+        }
+        else{
+          User.getUserByEmail(email, (err, user) =>{
+            if(err) throw err;
+            if(user){
+              res.render('register', {errors: [{param: 'email', msg: 'Email is already taken', value: '' }]});
+            }
+              else {
+                var newUser = new User({
+                  name: name,
+                  email: email,
+                  username: username,
+                  password: password
+                });
+
+                User.createUser(newUser, (err, user) => {
+                  if(err) throw err;
+                  console.log(err);
+                });
+                req.flash('success_msg', 'you are registerd');
+                console.log("user registerd");
+                res.redirect('/login');
+              }
+          });
+        }
       });
-      req.flash('success_msg', 'you are registerd');
-      res.redirect('/login');
     }
 });
 
@@ -125,6 +138,5 @@ router.get('/logout', function(req, res){
   req.flash('success_msg', 'you are logged out');
   res.redirect('/');
 });
-
 
 module.exports = router;
