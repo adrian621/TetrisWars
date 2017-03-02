@@ -19,12 +19,14 @@ var io = require('socket.io')(server, {});
 //setup db
 mongoose.connect('mongodb://localhost/loginapp');
 var db = mongoose.connection;
+db.on('error', console.log.bind(console, 'connection error'));
 
 //local includes
 
 var lobby_server = require('./public/script/lobbyServer');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var UserModel = require('./models/user');
 
 
 app.set('views', path.join(__dirname, 'views/layouts'));
@@ -44,7 +46,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'dippson',
   saveUninitialized: true,
-  resave: true
+  resave: true,
+  httpOnly: true, //dont let browers javascript access cookie-parser
+  secure: true, //only use cookies over https
+  ephemeral: true, // delete cookie when browers is closed
 }));
 
 //init passport

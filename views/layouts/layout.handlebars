@@ -23,6 +23,17 @@
 						<li> <a href = "account">Account</a></li>
 					</ul>
 					<ul class = "nav navbar-nav navbar-right">
+
+						{{#if success_msg}}
+						  <div class="alert alert-success">{{success_msg}}</div>
+						{{/if}}
+						{{#if error_msg}}
+						  <div class="alert alert-danger">{{error_msg}}</div>
+						{{/if}}
+						{{#if error}}
+						  <div class="alert alert-danger">{{error}}</div>
+						{{/if}}
+
 						{{#if user}}
 
 						<li><a href = "logout"><span class = "glyphicon glyphicon-log-out"></span> LogOut </a></li>
