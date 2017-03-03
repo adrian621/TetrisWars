@@ -48,22 +48,51 @@ lobby = function(id, randomNumbers){
 		maxUsers: 5,
 		boards: [],
 		clients: [],
+		users: [],
 	};
 	allLobbies[allLobbies.length] = lobby;
 }
 
 //----- Lobby Functions -----//
+
+//This is no longer used
 newLobby = function(client, data){
 	var id = addNewLobby();
 	console.log("New lobby with ID %s created.", id);
 	client.emit('newLobby', {lobbyNumber:id,response:true});
 }
-
-removeClients = function(lobbies){
-for(var i = 0; i < lobbies.length; i ++){
-lobbies[i].clients = [];
+////////////////***********____NYTT__________________________________!!
+lobby_server.createLobby = function(lobbyId, user, maxusers){
+addNewLobby_new(lobbyId);
+addUserToLobby_new(user, lobbyId);
 }
 
+addUserToLobby_new = function(user, lobbyId){
+	var index = getLobbyIndexFromId(lobbyId);
+	lobbyUser(allLobbies[index].lobbyUsers.length, index);
+	allLobbies[index].users.push(user);
+}
+addNewLobby_new = function(lobbyId){
+	var randomNumbers = generateRandomBlocks();
+	lobby(lobbyId, randomNumbers);
+}
+authUserInLobby(lobbyId, socket){
+	var index = getLobbyIndexFromId(lobbyId);
+	users = (allLobbies[index].users);
+	for(int i = 0; i < users.length; i++){
+		if(
+			user[i] == socket.request.user;
+			return true;
+		)
+	}
+	return false;
+}
+////////////////***********______________________________________!!
+
+removeClients = function(lobbies){
+		for(var i = 0; i < lobbies.length; i ++){
+			lobbies[i].clients = [];
+	}
 }
 
 getLobbyList = function(client){
@@ -73,6 +102,8 @@ getLobbyList = function(client){
 	client.emit('lobbyList',{lobbyList: lobbyListNoClients});
 }
 
+
+//ska ändras
 gameSetup = function(io, client, data){
 	var lobby = allLobbies[getLobbyIndexFromId(data.id)];
 	addUserToLobby(client, data);

@@ -10,17 +10,15 @@ router.get('/createLobby', Authfunc.ensureauth ,function(req, res){
 });
 
 router.get('/game', Authfunc.ensureauth, function(req, res){
-  res.render('game', {lobbyNumber: req.flash('lobbyNumber')});
+  res.render('game', {lobbyId: (req.flash('lobbyId'))});
   //send some info about lobby
 });
 router.post('/createLobby', Authfunc.ensureauth, function(req, res){
-  console.log('postat createLobby');
-  //lobby_server.createLobby
-  var lobbyId= shortid.generate();
-  console.log(lobbyId);
-  req.flash('lobbyNumber', lobbyId);
+  var lobbyId = shortid.generate();
+  console.log(req.user);
+  lobby_server.createLobby(lobbyId, req.user, 5);
+  req.flash('lobbyId', lobbyId);
   res.redirect('game');
-
 });
 
 module.exports = router;
