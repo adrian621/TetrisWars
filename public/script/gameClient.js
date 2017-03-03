@@ -13,10 +13,10 @@ var canMove = true;
 
 //----- Draw Functions -----//
 drawBlock = function(block){
-	var x = block.x; 
+	var x = block.x;
 	var y = block.y;
 	var adress = '../images/small_blocks/block_'+block.color+'.jpg';
-	
+
 	drawPicture(adress, x, y);
 }
 
@@ -40,7 +40,7 @@ drawPicture = function(adress, x, y){
 	else{
 		picture.onload = function(){
 			context.drawImage(picture, x, y);
-		}		
+		}
 	}
 }
 
@@ -60,7 +60,7 @@ updateCanvasBoard = function(board){
 	}
 	for(var i = 0; i< board.allBlocks.length; i++){
 		drawBlock(board.allBlocks[i]);
-	}	
+	}
 }
 
 updateCanvas = function(){
@@ -70,11 +70,14 @@ updateCanvas = function(){
 }
 
 //----- Generall Functions -----//
+/*
 getLobbyNumber = function(){
-	var url = window.location.href;	
+	alert(lobbyId);
+	var url = window.location.href;
 	var splitted = url.split('=');
 	return splitted[1];
 }
+*/
 
 update = function(){
 	gameCore.updateAllBoards(boards);
@@ -96,14 +99,14 @@ startGame = function(){
 
 //----- Events -----//
 addButtonEvent = function(boardNummer){
-	var canvas = document.getElementById("game");	
-	canvas.addEventListener("click", function(event){		
+	var canvas = document.getElementById("game");
+	canvas.addEventListener("click", function(event){
 		var rect = canvas.getBoundingClientRect();
 		var x = event.clientX - rect.left;
 		var y = event.clientY - rect.top;
-		if(x > boards[boardNummer-1].x+(boards[boardNummer-1].width/4) && 
-			x < boards[boardNummer-1].x+(boards[boardNummer-1].width/4)+120 && 
-			y > boards[boardNummer-1].y+boards[boardNummer-1].height+15 && 
+		if(x > boards[boardNummer-1].x+(boards[boardNummer-1].width/4) &&
+			x < boards[boardNummer-1].x+(boards[boardNummer-1].width/4)+120 &&
+			y > boards[boardNummer-1].y+boards[boardNummer-1].height+15 &&
 			y < (boards[boardNummer-1].y+boards[boardNummer-1].height+15)+40){
 				if(boards[boardNumber-1].isReady == false){
 					boards[boardNumber-1].isReady = true;
@@ -113,14 +116,19 @@ addButtonEvent = function(boardNummer){
 					socket.emit('lobby', {id: lobbyNumber, user: boardNumber, type:"userIsNotReady"});
 				}
 		}
-	}, false); 
+	}, false);
 }
 
 window.onload =function(){
-	lobbyNumber = getLobbyNumber();
+	if(lobbyId){
+	lobbyNumber = lobbyId;
+	}
+	else{
+		lobbyNumber = 0;
+	}
 	drawPicture('../images/background2.png', 0, 0);
-	
-	socket.emit('lobby', {id: lobbyNumber, type: "gameSetup"});			
+
+	socket.emit('lobby', {id: lobbyNumber, type: "gameSetup"});
 }
 
 window.onkeydown = function(e){
@@ -129,7 +137,7 @@ window.onkeydown = function(e){
 		gameCore.moveBlocksExport(e.keyCode, boards[boardNumber-1]);
 		updateCanvasBoard(boards[boardNumber-1]);
 		socket.emit('game', {move: e.keyCode, id:lobbyNumber, user:boardNumber, type:"move", board: boards[boardNumber-1]});
-		
+
 		intervalMove = setInterval(function(){
 			gameCore.moveBlocksExport(e.keyCode, boards[boardNumber-1]);
 			updateCanvasBoard(boards[boardNumber-1]);
@@ -144,7 +152,7 @@ window.onkeyup = function(e){
 }
 
 window.onbeforeunload = function(){
-	socket.emit('lobby', {id:lobbyNumber, user:boardNumber, type:"userLeavedLobby"});	
+	socket.emit('lobby', {id:lobbyNumber, user:boardNumber, type:"userLeavedLobby"});
 }
 
 //----- Socket Communication -----//
@@ -156,8 +164,8 @@ socket.on('gameSetupR', function(data){
 		addButtonEvent(boardNumber);
 	}
 	else{
-		gameCore.addBoards(data, data.users-1, boards);		
-		drawReadyButton(data, data.users-1);	
+		gameCore.addBoards(data, data.users-1, boards);
+		drawReadyButton(data, data.users-1);
 	}
 	updateCanvas();
 });

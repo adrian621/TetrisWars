@@ -154,7 +154,8 @@ console.log('Server is running.');
 io.sockets.on('connection', function(socket){
 	socket.on('lobby', function(data){
     if(socket.request.user && socket.request.user.logged_in){
-    console.log(socket.request.user);
+    //console.log(socket.request.user);
+    lobby_server.lobbyFunctions(io, socket, data);
     }
 	});
 

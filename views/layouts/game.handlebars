@@ -21,8 +21,12 @@
 </div>
 
 <footer>
-  {{#if lobbyNumber}}
-    <div class="alert alert-success">{{lobbyNumber}}</div>
+
+  {{#if lobbyId}}
+    <div class="alert alert-success">{{lobbyId}}</div>
+    <script>
+    var lobbyId = "{{ lobbyId }}";
+    </script>
   {{/if}}
   By Jessica & Adrian
 </footer>
