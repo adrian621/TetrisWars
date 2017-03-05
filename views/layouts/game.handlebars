@@ -1,5 +1,5 @@
 
-<div class="content">
+
   <div id="gameHeader">
     <div id="lobbyname">
       <h2>The flying dragon</h2>
@@ -18,9 +18,7 @@
 
   <br/>
   <button type="button" class="btn btn-primary" id = "HowToPlay">How to play</button>
-</div>
 
-<footer>
 
   {{#if lobbyId}}
     <div class="alert alert-success">{{lobbyId}}</div>
@@ -28,14 +26,7 @@
     var lobbyId = "{{ lobbyId }}";
     </script>
   {{/if}}
-  By Jessica & Adrian
-</footer>
-</div>
+
 <!-- <script src="../script/createLobby.js"></script> -->
 <script src="/script/gameCore.js"></script>
 <script src="/script/gameClient.js"></script>
-<style>
-#content{
-  padding-top: 80px;
-}
-</style>
