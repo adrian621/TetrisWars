@@ -1,0 +1,12 @@
+#login_boxes{
+
+}
+
+.login_box{
+	width: 220px;
+  height: 220px;
+	float: left;
+	text-align: center;
+  margin:20px;
+  background-color: crimson;
+}
