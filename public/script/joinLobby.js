@@ -1,24 +1,29 @@
 var socket= io();
 
+
 socket.emit('lobby', {type:"getLobbyList"});
 socket.on('lobbyList', function(data){
 	console.log('fick lista');
 	if(data.lobbyList.length != 0){
 		console.log('finns en lobby');
 		fillLobbyList(data.lobbyList);
-	}	
+	}
 	else{
-		console.log('no lobbys avialble');	
+		console.log('no lobbys avialble');
 	}
 });
 
+
+//Detta ska ändras en del.
+//Det som istället ska skickas till server Är template vaiable {{lobbyId}}
+
 fillLobbyList = function(allLobbys){
 	list = document.getElementById('allLobbysList');
-	for(i = 0; i < allLobbys.length; i++){		
+	for(i = 0; i < allLobbys.length; i++){
 		if(allLobbys[i].maxUsers != allLobbys[i].lobbyUsers.length){
-			item = document.createElement('li');	
+			item = document.createElement('li');
 			//item.appendChild(document.createTextNode(allLobbys[i].id));
-		
+
 			//set href
 			var a = document.createElement('a');
 			a.textContent = ("Name: "+allLobbys[i].id +", Users: "+allLobbys[i].lobbyUsers.length+", Max users: "+allLobbys[i].maxUsers);
@@ -30,6 +35,3 @@ fillLobbyList = function(allLobbys){
 		}
 	}
 }
-
-
-

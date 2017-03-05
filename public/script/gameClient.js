@@ -68,17 +68,6 @@ updateCanvas = function(){
 		updateCanvasBoard(boards[i]);
 	}
 }
-
-//----- Generall Functions -----//
-/*
-getLobbyNumber = function(){
-	alert(lobbyId);
-	var url = window.location.href;
-	var splitted = url.split('=');
-	return splitted[1];
-}
-*/
-
 update = function(){
 	gameCore.updateAllBoards(boards);
 	updateCanvas();
@@ -129,6 +118,11 @@ window.onload =function(){
 	drawPicture('../images/background2.png', 0, 0);
 
 	socket.emit('lobby', {id: lobbyNumber, type: "gameSetup"});
+	console.log('skickat gameSetup');
+}
+
+window.onbeforeunload = function(){
+	socket.emit('lobby', {id:lobbyNumber, user:boardNumber, type:"userLeavedLobby"});
 }
 
 window.onkeydown = function(e){
@@ -151,12 +145,9 @@ window.onkeyup = function(e){
 	canMove = true;
 }
 
-window.onbeforeunload = function(){
-	socket.emit('lobby', {id:lobbyNumber, user:boardNumber, type:"userLeavedLobby"});
-}
-
 //----- Socket Communication -----//
 socket.on('gameSetupR', function(data){
+	alert('tog emot game setup');
 	if(boardNumber == -1){
 		boardNumber = (data.users);
 		gameCore.addBoards(data, 0, boards);

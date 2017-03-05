@@ -1,1 +1,68 @@
-<p> welcome to lol</p>
+
+<div class="content">
+  <h2>Lobbies</h2>
+  {{!-- Här skicks lobbyId för specifik lobby till server. Skriv om så att rätt lobbyId skickas --}}
+  <form method = "post" action="/joinLobby">
+    <label>skriv in lobbyId för Test och utveckling</label>
+     <input type = "text" name = "lobbyId" placeholder="LobbyId">
+    <input type = "submit" text = "join">
+  </form>
+
+  <br/>
+  <div class="customBox">
+    <table class="table">
+      <thead>
+        <tr>
+        <th>Lobbyname</th>
+        <th>Users in Lobby</th>
+        <th>Max Users</th>
+        <th>Need Password</th>
+        <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+        <td>The Dragons</td>
+        <td>5</td>
+        <td>7</td>
+        <td>No</td>
+        <td><a href = "game"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+        </tr>
+        <tr>
+        <td>Poop</td>
+        <td>4</td>
+        <td>5</td>
+        <td>Yes</td>
+        <td><a href = "game"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+        </tr>
+        <tr>
+        <td>Bob is awesome</td>
+        <td>6</td>
+        <td>7</td>
+        <td>No</td>
+        <td><a href = "game"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+        </tr>
+        <tr>
+        <td>Noobs here</td>
+        <td>6</td>
+        <td>7</td>
+        <td>No</td>
+        <td><a href = "game"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+        </tr>
+      </tbody>
+    </table>
+    <script src = "../script/joinLobby.js"></script>
+    <ul id = "allLobbysList"></ul>
+  </div>
+
+  <div id = "createLobby">
+    <!-- <input type = "button" value = "Create new lobby" id = "NewLobbyButton"> </input> -->
+    <a href = "createLobby"><button type="button" class="btn btn-primary" id = "NewLobbyButton">Create lobby</button></a>
+    <script src = "../script/createLobby.js"></script>
+  </div>
+</div>
+<footer>
+  By Jessica & Adrian
+</footer>
+</div>

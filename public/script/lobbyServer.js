@@ -5,12 +5,12 @@ var allLobbies = [];
 //----- Public Functions -----//
 lobby_server.lobbyFunctions = function(client, message, io){
 	switch(message.type){
-		case "newLobby": newLobby(client, message); break;
-		case "getLobbyList": getLobbyList(client); break;
-		case "gameSetup": gameSetup(io, client, message); break;
-		case "userIsReady": userIsReady(io, message); break;
-		case "userIsNotReady": userIsNotReady(io, message); break;
-		case "userLeavedLobby": userLeavedLobby(client, message); break;
+		//case "newLobby": newLobby(client, message); break;
+		//case "getLobbyList": getLobbyList(client); break;
+		case "gameSetup": gameSetup_new(io, client, message);  break;
+		//case "userIsReady": userIsReady(io, message); break;
+		//case "userIsNotReady": userIsNotReady(io, message); break;
+		//case "userLeavedLobby": userLeavedLobby(client, message); break;
 
 		//case "gameOver": gameOverServer(io, message); break;
 	}
@@ -27,13 +27,14 @@ lobby_server.gameFunctions = function(io, message, client){
 
 
 //----- Structs -----//
-lobbyUser = function(id, i){
+lobbyUser = function(id, i, authUser){
 	var lobbyUser = {
 		id:id,
 		isReady: false,
 		lastStateValid: true,
 		lastStateAllBlocks: [],
 		lastStateCurrentBlocks: [],
+		authUser: authUser
 	};
 	allLobbies[i].lobbyUsers[allLobbies[i].lobbyUsers.length] = lobbyUser;
 	//console.log("User added in lobby: %s  on spot number %s. Lobby id = %s is is: %s", i, allLobbies[i].lobbyUsers.length-1, allLobbies[i].id, lobbyUser.id);
@@ -48,7 +49,6 @@ lobby = function(id, randomNumbers){
 		maxUsers: 5,
 		boards: [],
 		clients: [],
-		users: [],
 	};
 	allLobbies[allLobbies.length] = lobby;
 }
@@ -66,24 +66,33 @@ lobby_server.createLobby = function(lobbyId, user, maxusers){
 addNewLobby_new(lobbyId);
 addUserToLobby_new(user, lobbyId);
 }
-
-addUserToLobby_new = function(user, lobbyId){
+lobby_server.addUserToLobby_new_export = function(authUser, lobbyId){
+	addUserToLobby_new(authUser, lobbyId);
+}
+lobby_server.validateId = function(lobbyId){
+	for(var i = 0; i < allLobbies.length; i++){
+		if(allLobbies[i].id == lobbyId){
+		return true;
+		}
+	}
+	return false;
+}
+addUserToLobby_new = function(authUser, lobbyId){
 	var index = getLobbyIndexFromId(lobbyId);
-	lobbyUser(allLobbies[index].lobbyUsers.length, index);
-	allLobbies[index].users.push(user);
+	lobbyUser(allLobbies[index].lobbyUsers.length, index, authUser);
 }
 addNewLobby_new = function(lobbyId){
 	var randomNumbers = generateRandomBlocks();
 	lobby(lobbyId, randomNumbers);
 }
-authUserInLobby(lobbyId, socket){
+
+authUserInLobby= function(lobbyId, socket){
 	var index = getLobbyIndexFromId(lobbyId);
 	users = (allLobbies[index].users);
-	for(int i = 0; i < users.length; i++){
-		if(
-			user[i] == socket.request.user;
+	for(var i = 0; i < users.length; i++){
+		if(user[i] == socket.request.user){
 			return true;
-		)
+		}
 	}
 	return false;
 }
@@ -103,8 +112,41 @@ getLobbyList = function(client){
 }
 
 
-//ska ändras
+//nytt
+getLobbyIdFromSocket = function(user){
+	for(var i = 0; i < allLobbies.length; i++){
+		for(var j = 0; j < allLobbies[i].lobbyUsers.length; j++){
+			if(user.id === (allLobbies[i].lobbyUsers[j].authUser.id)){
+				return allLobbies[i].id;
+			}
+		}
+	}
+return 0;
+}
+
+//nytt
+gameSetup_new = function(io, socket, data){
+	console.log(data.type);
+
+	//let socket join group of sockets
+
+	var lobbyId = getLobbyIdFromSocket(socket.request.user);
+	if(lobbyId == 0){
+		console.log('no lobby found');
+	}
+	else{
+		console.log('user belong to lobby with id' + lobbyId);
+	}
+
+	//var randomNumbers = getRandomNumbersFromLobby(client.u);
+	/*
+	var randomNumbers = getRandomNumbersFromLobby(data);
+	var users = getUsersFromLobby(data);
+	gameServer.emitToLobby(lobby, {type: 'gameSetupR', randomNumbers: randomNumbers, users: users});
+	*/
+}
 gameSetup = function(io, client, data){
+	console.log('asdasd');
 	var lobby = allLobbies[getLobbyIndexFromId(data.id)];
 	addUserToLobby(client, data);
 	game_server.emitToLobby(lobby, {type: 'gameSetupR', randomNumbers:getRandomNumbersFromLobby(data), users:getUsersFromLobby(data), id:data.id});
@@ -236,6 +278,11 @@ allUsersInLobbyReady = function(data){
 //----- Lobby Random Numbers Functions-----//
 getRandomNumbersFromLobby = function(data){
 	var index = getLobbyIndexFromId(data.id);
+	return allLobbies[index].randomNumbers;
+}
+
+getRandomNumbersFromLobby_new = function(id){
+	var index = getLobbyIndexFromId(id);
 	return allLobbies[index].randomNumbers;
 }
 
