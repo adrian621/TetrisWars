@@ -81,7 +81,7 @@ io.use(passportSocketIo.authorize({
 
 
 function onAuthorizeSuccess(data, accept){
-  console.log('successful connection to socket.io');
+  //console.log('successful connection to socket.io');
 
     // The accept-callback still allows us to decide whether to
     // accept the connection or not.
@@ -154,16 +154,17 @@ console.log('Server is running.');
 io.sockets.on('connection', function(socket){
 	socket.on('lobby', function(data){
     if(socket.request.user && socket.request.user.logged_in){
-    //console.log(socket.request.user);
-    lobby_server.lobbyFunctions(io, socket, data);
+    //console.log(data.type);
+    lobby_server.lobbyFunctions(socket, data, io);
     }
 	});
-
+/*
 	socket.on('game', function(data){
     if(socket.request.user && socket.request.user.logged_in){
 		lobby_server.gameFunctions(io, data, socket);
     }
 	});
+  */
 });
 
 
@@ -173,7 +174,7 @@ var eventSocket = io.of('/events');
 eventSocket.on('connection', function(socket){
   socket.on('event1', function(){
     if(socket.request.user && socker.request.user.logged_in){
-      consolelog('inloggad användare skickat socket');
+      console.log('inloggad användare skickat socket');
     }
     else{
       console.log('socket av icke inloggad användare');

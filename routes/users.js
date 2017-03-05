@@ -5,6 +5,7 @@ var LocalStrategy = require('passport-local').Strategy;
 
 var User = require('../models/user.js');
 var Authfunc = require('../models/auth');
+var passportConfig = require('../config/passport')(passport);
 
 router.get('/register', Authfunc.ensureNotauth, function(req, res){
   res.render('register');
@@ -20,6 +21,16 @@ router.get('/logout', Authfunc.ensureauth, function(req, res){
   req.flash('success_msg', 'Logout successful');
   res.redirect('/');
 });
+
+router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']})); //scope läggs till för att få ut email av facebook
+
+router.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+});
+
 
 router.post('/register', function(req, res){
     var name = req.body.name;
@@ -59,12 +70,20 @@ router.post('/register', function(req, res){
               res.render('register', {errors: [{param: 'email', msg: 'Email is already taken', value: '' }]});
             }
               else {
+
+                var newUser = new User();
+                newUser.username = name;
+                newUser.email = email;
+                newUser.username = username;
+                newUser.password = password;
+                /*
                 var newUser = new User({
-                  name: name,
-                  email: email,
-                  username: username,
-                  password: password
+                  local.name: name,
+                  local.email: email,
+                  local.username: username,
+                  local.password: password
                 });
+                */
 
                 User.createUser(newUser, (err, user) => {
                   if(err) throw err;

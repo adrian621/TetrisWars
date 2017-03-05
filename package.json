@@ -24,6 +24,7 @@
     "mongodb": "*",
     "mongoose": "*",
     "passport": "*",
+    "passport-facebook": "^2.1.1",
     "passport-http": "*",
     "passport-local": "*",
     "passport.socketio": "^3.7.0",
