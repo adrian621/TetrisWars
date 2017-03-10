@@ -4,10 +4,10 @@ var interval;
 
 //----- Variables -----//
 //store this in lobby
-	
+
 game_server.move = function(io, data, lobby){
 	game_core.moveBlocksExport(data.move, lobby.boards[data.user-1]);
-	game_server.emitToLobby(lobby, {type: 'move', id:data.id, user:data.user, board: lobby.boards[data.user-1]});	
+	game_server.emitToLobby(lobby, {type: 'move', id:data.id, user:data.user, board: lobby.boards[data.user-1]});
 }
 
 game_server.boardIsUpdated = function(data, lobby, client){
@@ -22,12 +22,19 @@ game_server.emitToLobby = function(lobby, data){
 	}
 }
 
+game_server.broadcastToLobby = function(lobby, socket, data){
+	for(var i = 0; i < lobby.clients.length; i++){
+		if(lobby.clients[i] != socket){
+			lobby.clients[i].emit(data.type, data);
+		}
+	}
+}
 
 blockListEqual = function(blocks_1, blocks_2){
 	if(blocks_1.length != blocks_2.length){
 		return false;
 	}
-	
+
 	for(var i = 0; i < blocks_1.length; i++){
 		if(blocks_1[i].x != blocks_2[i].x){
 			return false;
@@ -36,28 +43,28 @@ blockListEqual = function(blocks_1, blocks_2){
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
 checkValidity = function(data, lobby){
 	//console.log("data.user: "+data.user);
-	
+
 	//All blocks
 	if(!blockListEqual(lobby.boards[data.user-1].allBlocks, data.board.allBlocks)){
 		if(!blockListEqual(lobby.lobbyUsers[data.user-1].lastStateAllBlocks, data.board.allBlocks)){
 			return false;
 		}
 	}
-	
+
 	//Current blocks
 	if(!blockListEqual(lobby.boards[data.user-1].currentBlocks, data.board.currentBlocks)){
 		if(!blockListEqual(lobby.lobbyUsers[data.user-1].lastStateCurrentBlocks, data.board.currentBlocks)){
 			return false;
 		}
 	}
-	
-	return true;		
+
+	return true;
 }
 
 update = function(lobby){
@@ -66,9 +73,9 @@ update = function(lobby){
 		lobby.lobbyUsers[i].lastStateCurrentBlocks = lobby.boards[i].currentBlocks;
 		//console.log("last state = "+lobby.lobbyUsers[i].lastStateCurrentBlocks);
 	}
-	
+
 	var gameOvers = game_core.updateAllBoards(lobby.boards);
-	
+
 	if (gameOvers >= lobby.lobbyUsers.length-1){
 		var winner = 0;
 		for(var i = 0; i < lobby.lobbyUsers.length; i++){
@@ -83,7 +90,7 @@ update = function(lobby){
 		lobby.isActive = false;
 	}
 	for(var i = 0; i < lobby.boards.length; i++){
-		
+
 		game_server.emitToLobby(lobby, {type: 'move', user:i+1, board: lobby.boards[i]});
 	}
 }

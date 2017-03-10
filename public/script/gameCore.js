@@ -14,6 +14,10 @@
 		}
 	};
 
+	exports.addBoard = function(data, list){
+		Board((150*(data.place+1)-100),100, 'black', blockSizePlayer*20, blockSizePlayer*10, blockSizePlayer, data.username, data.randomNumbers, list);
+	};
+
 	exports.moveBlocksExport = function(keycode, board){
 		moveBlocks(keycode, board);
 	}

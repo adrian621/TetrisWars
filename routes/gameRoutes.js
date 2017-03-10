@@ -15,7 +15,7 @@ router.get('/game', Authfunc.ensureauth, function(req, res){
 });
 router.post('/createLobby', Authfunc.ensureauth, function(req, res){
 
-  var lobbyId = shortid.generate();
+  var lobbyId = '1';//shortid.generate();
   lobby_server.createLobby(lobbyId, req.user, 5);
   req.flash('lobbyId', lobbyId);
   res.redirect('game');

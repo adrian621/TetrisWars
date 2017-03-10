@@ -10,6 +10,7 @@ var boards = [];
 var interval;
 var intervalMove;
 var canMove = true;
+var boardName;
 
 //----- Draw Functions -----//
 drawBlock = function(block){
@@ -45,6 +46,7 @@ drawPicture = function(adress, x, y){
 }
 
 drawReadyButton= function(data, start){
+	console.log(data.users);
 	for(var i = start; i < data.users; i++){
 		var x = boards[i].x - 10;
 		var y = boards[i].y + boards[i].height+15;
@@ -93,16 +95,16 @@ addButtonEvent = function(boardNummer){
 		var rect = canvas.getBoundingClientRect();
 		var x = event.clientX - rect.left;
 		var y = event.clientY - rect.top;
-		if(x > boards[boardNummer-1].x+(boards[boardNummer-1].width/4) &&
-			x < boards[boardNummer-1].x+(boards[boardNummer-1].width/4)+120 &&
-			y > boards[boardNummer-1].y+boards[boardNummer-1].height+15 &&
-			y < (boards[boardNummer-1].y+boards[boardNummer-1].height+15)+40){
-				if(boards[boardNumber-1].isReady == false){
-					boards[boardNumber-1].isReady = true;
-					socket.emit('lobby', {id: lobbyNumber, user: boardNumber, type:"userIsReady"});
+		if(x > boards[boardNummer].x +(boards[boardNummer].width/4) &&
+			x < boards[boardNummer].x+(boards[boardNummer].width/4)+120 &&
+			y > boards[boardNummer].y+boards[boardNummer].height+15 &&
+			y < (boards[boardNummer].y+boards[boardNummer].height+15)+40){
+				if(boards[boardNumber].isReady == false){
+					boards[boardNumber].isReady = true;
+					socket.emit('lobby', {type:"userIsReady"});
 				}else{
-					boards[boardNumber-1].isReady = false
-					socket.emit('lobby', {id: lobbyNumber, user: boardNumber, type:"userIsNotReady"});
+					boards[boardNumber].isReady = false
+					socket.emit('lobby', {type:"userIsNotReady"});
 				}
 		}
 	}, false);
@@ -153,41 +155,32 @@ socket.on('userLeavedLobby', function(){
 
 socket.on('gameSetupR', function(data){
 		console.log("received gamesetupR");
-		/*
+
 		boardName = data.username;
+		boardNumber = data.place;
 
-		gameCore.addBoards(data, 0, boards, 1);
-		drawReadyButton(data, 0);
-		addButtonEvent(boardNumber);
-
-	updateCanvas();
-	*/
-});
-
-socket.on('gameSetupChange', function(data){
-	alert('tog emot game setup');
-	if(boardNumber == -1){
-		boardNumber = (data.users);
 		gameCore.addBoards(data, 0, boards);
 		drawReadyButton(data, 0);
 		addButtonEvent(boardNumber);
-	}
-	else{
-		gameCore.addBoards(data, data.users-1, boards);
-		drawReadyButton(data, data.users-1);
-	}
+		updateCanvas();
+
+});
+
+socket.on('newPlayer', function(data){
+	gameCore.addBoard(data, boards);
+	drawReadyButton(data, data.place);
 	updateCanvas();
 });
 
 socket.on('userIsReady', function(data){
-	var x = boards[data.user-1].x - 10;
-	var y = boards[data.user-1].y + boards[data.user-1].height+15;
+	var x = boards[data.place].x - 10;
+	var y = boards[data.place].y + boards[data.place].height+15;
 	drawPicture('../images/readyButton.png', x, y);
 });
 
 socket.on('userIsNotReady', function(data){
-	var x = boards[data.user-1].x - 10;
-	var y = boards[data.user-1].y + boards[data.user-1].height+15;
+	var x = boards[data.place].x - 10;
+	var y = boards[data.place].y + boards[data.place].height+15;
 	drawPicture('../images/waitForReadyButton.png', x, y);
 });
 
@@ -214,8 +207,8 @@ socket.on('invalidBoard', function(data){
 socket.on('winner', function(data){
 	clearInterval(interval);
 	drawReadyButton({users: boards.length}, 0);
-	var x = boards[data.winner-1].x - 10;
-	var y = boards[data.winner-1].y - 45;
+	var x = boards[data.winner].x - 10;
+	var y = boards[data.winner].y - 45;
 	drawPicture('../images/winnerButton.png', x, y);
-	boards[data.winner-1].isActive = false;
+	boards[data.winner].isActive = false;
 });

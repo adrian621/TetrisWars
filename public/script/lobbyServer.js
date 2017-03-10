@@ -8,9 +8,9 @@ lobby_server.lobbyFunctions = function(socket, message, io){
 		//case "newLobby": newLobby(client, message); break;
 		//case "getLobbyList": getLobbyList(client); break;
 
-		case "gameSetup": console.log("got gamesetup in lobbyServer"); gameSetup(io, socket, message);  break;
-		//case "userIsReady": userIsReady(io, message); break;
-		//case "userIsNotReady": userIsNotReady(io, message); break;
+		case "gameSetup": gameSetup(io, socket, message);  break;
+		case "userIsReady": userIsReady(io, socket, message); break;
+		case "userIsNotReady": userIsNotReady(io, socket, message); break;
 		//case "userLeavedLobby": userLeavedLobby(client, message); break;
 
 		//case "gameOver": gameOverServer(io, message); break;
@@ -75,6 +75,7 @@ lobby_server.addUserToLobby_new_export = function(authUser, lobbyId){
 	addUserToLobby_new(authUser, lobbyId);
 }
 lobby_server.validateId = function(lobbyId){
+	console.log('user tryd to join lobby with id'+ lobbyId);
 	for(var i = 0; i < allLobbies.length; i++){
 		if(allLobbies[i].id == lobbyId){
 		return true;
@@ -146,7 +147,11 @@ gameSetup = function(io, socket, data){
 	else{
 		console.log('user belong to lobby with id (2): ' + lobbyId);
 	}
+
+
 	var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
+
+	lobby.clients.push(socket);
   var randomNumbers = getRandomNumbersFromLobby(lobbyId);
 	var users = getUsersFromLobby(lobbyId);
 	var username = socket.request.user.username;
@@ -154,9 +159,9 @@ gameSetup = function(io, socket, data){
 	var lobbyUser = getUserFromUsername(authUser, lobby);
 	console.log('user got place '+ lobbyUser.place);
 	//game_server.emitToLobby(lobby, {type: 'gameSetupR', randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place});
-	io.emit(lobby, {type: 'gameSetupR', randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place});
+	socket.emit('gameSetupR', {randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place});
+	game_server.broadcastToLobby(lobby, socket, {type: 'newPlayer',  users: users, randomNumbers: randomNumbers, username: username, place: lobbyUser.place});
 }
-
 
 getUserFromUsername = function(authUser, lobby){
 		for(var j = 0; j < lobby.lobbyUsers.length; j++){
@@ -206,26 +211,44 @@ removeLobby = function(data){
 }
 
 //----- Lobby User Functions -----//
-userIsReady = function(io, data){
-	var lobby = allLobbies[getLobbyIndexFromId(data.id)];
+userIsReady = function(io, socket, data){
+	var authUser = socket.request.user;
+	var lobbyId = getLobbyIdFromSocket(socket.request.user);
+  var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
+
+
 	if(!lobby.isActive){
-		userInLobbyIsReady(data);
-		if(allUsersInLobbyReady(data)){
+		var lobbyUser = getUserFromAuthUser(authUser, lobby);
+		lobbyUser.isReady = true;
+
+		if(allUsersInLobbyReady(lobby) && (lobby.lobbyUsers.length > 1)){
 			lobby.randomNumbers = generateRandomBlocks();
-			game_server.emitToLobby(lobby, {type: 'startGame', users:getUsersFromLobby(data), id:data.id, randomNumbers: lobby.randomNumbers});
+			game_server.emitToLobby(lobby, {type: 'startGame', users: lobby.users, randomNumbers: lobby.randomNumbers});
 			game_server.startGame(lobby);
 			console.log("Game started in lobby with ID %s.", data.id);
 		}else{
-			game_server.emitToLobby(lobby, {type: 'userIsReady', user: data.user, id: data.id});
+			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place});
 		}
 	}
 }
 
-userIsNotReady = function(io, data){
-	var lobby = allLobbies[getLobbyIndexFromId(data.id)];
+getUserFromAuthUser = function(user, lobby){
+		for(var j = 0; j < lobby.lobbyUsers.length; j++){
+			if(user.id === (lobby.lobbyUsers[j].authUser.id)){
+				return lobby.lobbyUsers[j];
+			}
+		}
+}
+
+userIsNotReady = function(io, socket, data){
+	var authUser = socket.request.user;
+	var lobbyId = getLobbyIdFromSocket(socket.request.user);
+  var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
 	if(!lobby.isActive){
-		userInLobbyIsNotReady(data);
-		game_server.emitToLobby(lobby, {type: 'userIsNotReady', user: data.user, id: data.id});
+		var lobbyUser = getUserFromAuthUser(authUser, lobby);
+		lobbyUser.isReady = false;
+
+		game_server.emitToLobby(lobby, {type: 'userIsNotReady', place:lobbyUser.place});
 	}
 }
 
@@ -265,27 +288,14 @@ getUsersFromLobby = function(id){
 }
 
 //----- Lobby Ready Functions -----//
-userInLobbyIsReady = function(data){
-	var indexLobby = getLobbyIndexFromId(data.id);
-	var indexUser = getUserFromId(data.user, indexLobby);
-	allLobbies[indexLobby].lobbyUsers[indexUser].isReady = true;
-}
+allUsersInLobbyReady = function(lobby){
 
-userInLobbyIsNotReady = function(data){
-	var indexLobby = getLobbyIndexFromId(data.id);
-	var indexUser = getUserFromId(data.user, indexLobby);
-	allLobbies[indexLobby].lobbyUsers[indexUser].isReady = false;
-}
-
-allUsersInLobbyReady = function(data){
-	var indexLobby = getLobbyIndexFromId(data.id);
-
-	for(var i = 0; i < allLobbies[indexLobby].lobbyUsers.length; i++){
-		if (allLobbies[indexLobby].lobbyUsers[i].isReady == false){
+	for(var i = 0; i < lobby.lobbyUsers.length; i++){
+		if (lobby.lobbyUsers[i].isReady == false){
 			return false;
 		}
 	}
-	allLobbies[indexLobby].isActive = true;
+	lobby.isActive = true;
 	return true;
 }
 

@@ -21,7 +21,7 @@ const socketIo = require('socket.io');
 const passportSocketIo = require('passport.socketio');
 
 var app = express();
-var server = http.Server(express);
+var server = http.Server(app);
 var io = socketIo(server);
 //var sessionStore = new RedisStore({client: redisUrl.connect(process.env.REDIS_URL)});
 //var sessionStore = new RedisStore({ client: redisUrl.connect(process.env.REDIS_URL) });
@@ -85,7 +85,7 @@ function onAuthorizeSuccess(data, accept){
 
     // The accept-callback still allows us to decide whether to
     // accept the connection or not.
-    accept(null, true);
+    //accept(null, true);
 
     // OR
 
