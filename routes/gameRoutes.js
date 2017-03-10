@@ -27,7 +27,7 @@ router.post('/joinLobby', Authfunc.ensureauth, function(req, res){
     res.render('index', {error_msg: 'Unable to join lobby'});
   }
   else{
-  console.log('User join lobby with id: ' + req.body.lobbyId);
+  console.log('User join lobby with id fff: ' + req.body.lobbyId);
   lobby_server.addUserToLobby_new_export(req.user, lobbyId);
   req.flash('lobbyId', lobbyId);
   res.redirect('game');

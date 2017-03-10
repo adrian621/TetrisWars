@@ -117,10 +117,10 @@ window.onload =function(){
 	}
 	drawPicture('../images/background2.png', 0, 0);
 
-	socket.emit('lobby', {id: lobbyNumber, type: "gameSetup"});
+	console.log("Innan gamesetup")
+	socket.emit('lobby', {type: "gameSetup"});
 	console.log('skickat gameSetup');
 }
-
 window.onbeforeunload = function(){
 	socket.emit('lobby', {id:lobbyNumber, user:boardNumber, type:"userLeavedLobby"});
 }
@@ -146,7 +146,25 @@ window.onkeyup = function(e){
 }
 
 //----- Socket Communication -----//
+socket.on('userLeavedLobby', function(){
+
+
+});
+
 socket.on('gameSetupR', function(data){
+		console.log("received gamesetupR");
+		/*
+		boardName = data.username;
+
+		gameCore.addBoards(data, 0, boards, 1);
+		drawReadyButton(data, 0);
+		addButtonEvent(boardNumber);
+
+	updateCanvas();
+	*/
+});
+
+socket.on('gameSetupChange', function(data){
 	alert('tog emot game setup');
 	if(boardNumber == -1){
 		boardNumber = (data.users);

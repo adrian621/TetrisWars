@@ -21,7 +21,7 @@ const socketIo = require('socket.io');
 const passportSocketIo = require('passport.socketio');
 
 var app = express();
-var server = http.Server(app);
+var server = http.Server(express);
 var io = socketIo(server);
 //var sessionStore = new RedisStore({client: redisUrl.connect(process.env.REDIS_URL)});
 //var sessionStore = new RedisStore({ client: redisUrl.connect(process.env.REDIS_URL) });
@@ -151,13 +151,19 @@ server.listen(process.env.PORT || 2000);
 console.log('Server is running.');
 
 
-io.sockets.on('connection', function(socket){
+io.on('connection', function(socket){
 	socket.on('lobby', function(data){
     if(socket.request.user && socket.request.user.logged_in){
-    //console.log(data.type);
+    console.log(data.type);
     lobby_server.lobbyFunctions(socket, data, io);
     }
 	});
+
+  /*
+  socket.on('disconnect', function(){
+    socket.removeAllListeners();
+    io.removeAllListeners();
+  });
 /*
 	socket.on('game', function(data){
     if(socket.request.user && socket.request.user.logged_in){

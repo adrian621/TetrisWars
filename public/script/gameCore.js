@@ -1,23 +1,23 @@
 //----- Public Functions -----//
 (function(exports){
 
-	exports.startGame = function(boards){		
+	exports.startGame = function(boards){
 		for(var i = 0; i < boards.length; i++){//need testing
 			createTetromino(boards[i].currentBlocks, "current", boards[i]);
 			boards[i].isActive = true;
 		}
 	};
 
-	exports.addBoards = function(data, start, list){	
+	exports.addBoards = function(data, start, list){
 		for(i = start; i < data.users; i++){
-			Board((150*(i+1)-100),100, 'black', blockSizePlayer*20, blockSizePlayer*10, blockSizePlayer, "player1", data.randomNumbers, list);
+			Board((150*(i+1)-100),100, 'black', blockSizePlayer*20, blockSizePlayer*10, blockSizePlayer, data.username, data.randomNumbers, list);
 		}
 	};
-	
+
 	exports.moveBlocksExport = function(keycode, board){
 		moveBlocks(keycode, board);
 	}
-	
+
 	exports.updateAllBoards = function(boards){
 		var gameOvers = 0;
 		for(var i = 0; i < boards.length; i++){
@@ -71,7 +71,7 @@ changeI = function(form, board){
 		board.currentBlocks[1].y += board.blockSize;
 		board.currentBlocks[3].x += board.blockSize;
 		board.currentBlocks[3].y -= board.blockSize;
-		
+
 	}else{
 		board.currentBlocks[0].x += board.blockSize*2;
 		board.currentBlocks[0].y -= board.blockSize*2;
@@ -205,7 +205,7 @@ changeJ = function(form, board){
 		board.currentBlocks[2].x -= board.blockSize;
 		board.currentBlocks[2].y -= board.blockSize;
 		board.currentBlocks[3].x -= board.blockSize*2;
-		
+
 	}
 	else if((form % 4) == 2){
 		board.currentBlocks[0].x -= board.blockSize;
@@ -248,7 +248,7 @@ changeL= function(form, board){
 		board.currentBlocks[2].x -= board.blockSize;
 		board.currentBlocks[2].y -= board.blockSize;
 		board.currentBlocks[3].y -= board.blockSize*2;
-		
+
 	}
 	else if((form % 4) == 2){
 		board.currentBlocks[0].x -= board.blockSize;
@@ -317,7 +317,7 @@ collide = function(board){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].y == board.currentBlocks[i].y 
+			if(board.allBlocks[a].y == board.currentBlocks[i].y
 			&& board.allBlocks[a].x == board.currentBlocks[i].x){
 				return true;
 			}
@@ -339,7 +339,7 @@ changeCorrectForm = function(form, board){
 
 changeForm = function(form, board){
 	changeCorrectForm(form, board);
-	
+
 	if(collide(board)){
 		console.log("collide");
 		changeCorrectForm(form+1, board);
@@ -356,7 +356,7 @@ collideDown = function(board){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].y == (board.currentBlocks[i].y + board.blockSize) 
+			if(board.allBlocks[a].y == (board.currentBlocks[i].y + board.blockSize)
 			&& board.allBlocks[a].x == board.currentBlocks[i].x){
 				return true;
 			}
@@ -370,7 +370,7 @@ collideRight = function(board){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].x == (board.currentBlocks[i].x + board.blockSize) 
+			if(board.allBlocks[a].x == (board.currentBlocks[i].x + board.blockSize)
 			&& board.allBlocks[a].y == board.currentBlocks[i].y){
 				return true;
 			}
@@ -384,7 +384,7 @@ collideLeft = function(board){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].x == (board.currentBlocks[i].x - board.blockSize) 
+			if(board.allBlocks[a].x == (board.currentBlocks[i].x - board.blockSize)
 			&& board.allBlocks[a].y == board.currentBlocks[i].y){
 				return true;
 			}
@@ -479,14 +479,14 @@ gameOver = function(board){
 
 moveDownAboveOrDelete = function(higherThan, board){
 	var index;
-	
+
 	for(var i = board.allBlocks.length - 1; i >= 0 ; i--){
 		if(board.allBlocks[i].y == higherThan){
 			index = board.allBlocks.indexOf(board.allBlocks[i]);
 			board.allBlocks.splice(index, 1);
 		}
 	}
-	
+
 	for(var i = 0; i < board.allBlocks.length; i++){
 		if(board.allBlocks[i].y < higherThan){
 		board.allBlocks[i].y += board.blockSize;
@@ -497,17 +497,17 @@ moveDownAboveOrDelete = function(higherThan, board){
 fullRowControll = function(board){
 	var counter = [];
 	var rowWasCleared = false;
-	
+
 	//Creates zeros in the list counter on all spots
 	for(var i = 0; i < board.height/board.blockSize; i++){
 		counter[i] = 0;
 	}
-	
+
 	//Counts all blocks per row
 	for(var a = 0; a < board.allBlocks.length; a++){
 		counter[((board.allBlocks[a].y-board.y)/board.blockSize)] += 1;
 	}
-	
+
 	//go through all elements in counter
 	for(var r = 0; r < counter.length; r++){
 		//Checks if row is full
@@ -533,7 +533,7 @@ updateBoard = function(board){
 		nextBlocks = [];
 		createTetromino(nextBlocks, "next", board);*/
 		createTetromino(board.currentBlocks, "current", board);
-		
+
 	}else{
 		moveBlocks(40, board);
 	}
