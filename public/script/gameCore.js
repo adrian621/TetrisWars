@@ -549,7 +549,3 @@ fullRowControll = function(board){
 }
 
 //----- Update Functions -----//
-startGameBoard = function(board){
-	createTetromino(board.currentBlocks, "current", board);
-	board.isActive = true;
-};
