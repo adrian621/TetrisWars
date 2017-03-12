@@ -14,5 +14,9 @@ Frontend
 -"How to play"-popup
 -"glömt lösenord?"
 
+Båda:
+-isActivelistan hos gameClient ska vara hos server
+man har endast sitt eget board
+
 
 [1,0,1,1,0]

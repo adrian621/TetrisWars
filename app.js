@@ -159,17 +159,20 @@ io.on('connection', function(socket){
     }
 	});
 
+/*
+  socket.on('game', function(data){
+    if(socket.request.user && socket.request.user.logged_in){
+		lobby_server.gameFunctions(socket, data, io);
+    }
+	});*/
+
   /*
   socket.on('disconnect', function(){
     socket.removeAllListeners();
     io.removeAllListeners();
   });
 /*
-	socket.on('game', function(data){
-    if(socket.request.user && socket.request.user.logged_in){
-		lobby_server.gameFunctions(io, data, socket);
-    }
-	});
+
   */
 });
 

@@ -1,6 +1,8 @@
 var lobby_server = module.exports = {};
 var game_server = require('./gameServer');
 var allLobbies = [];
+var distance = 150;
+var blockSize = 10;
 
 //----- Public Functions -----//
 lobby_server.lobbyFunctions = function(socket, message, io){
@@ -11,18 +13,23 @@ lobby_server.lobbyFunctions = function(socket, message, io){
 		case "gameSetup": gameSetup(io, socket, message);  break;
 		case "userIsReady": userIsReady(io, socket, message); break;
 		case "userIsNotReady": userIsNotReady(io, socket, message); break;
-		//case "userLeavedLobby": userLeavedLobby(client, message); break;
-
-		//case "gameOver": gameOverServer(io, message); break;
+		case "userLeavedLobby": userLeavedLobby(io, socket, message); break;
+		case "gameOver": gameOverServer(io, message); break;
 	}
 };
 
 //----- Game Functions -----//
-lobby_server.gameFunctions = function(io, message, client){
-	var lobby = allLobbies[getLobbyIndexFromId(message.id)];
+lobby_server.gameFunctions = function(socket, message, io){
 	switch(message.type){
-		case "move": game_server.move(io, message, lobby); break;
-		case "update": game_server.boardIsUpdated(message, lobby, client); break;
+		case "move":
+			var authUser = socket.request.user;
+			var lobbyId = getLobbyIdFromAuth(authUser);
+			var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
+			var lobbyUser = getUserFromUsername(authUser, lobby);
+			var indexUser = lobby.lobbyUsers.indexOf(lobbyUser);
+			game_server.move(io, message, lobby, indexUser);
+			break;
+		//case "update": game_server.boardIsUpdated(message, lobby, client); break;
 	}
 };
 
@@ -38,7 +45,8 @@ lobbyUser = function(id, index, authUser, place){
 		authUser: authUser,
 		place: place
 	};
-	allLobbies[index].lobbyUsers[allLobbies[index].lobbyUsers.length] = lobbyUser;
+	var lobby = allLobbies[index];
+	lobby.lobbyUsers[lobby.lobbyUsers.length] = lobbyUser;
 
 	//console.log("User added in lobby: %s  on spot number %s. Lobby id = %s is is: %s", i, allLobbies[i].lobbyUsers.length-1, allLobbies[i].id, lobbyUser.id);
 }
@@ -66,14 +74,17 @@ newLobby = function(client, data){
 	console.log("New lobby with ID %s created.", id);
 	client.emit('newLobby', {lobbyNumber:id,response:true});
 }
+
 ////////////////***********____NYTT__________________________________!!
 lobby_server.createLobby = function(lobbyId, user, maxusers){
-addNewLobby_new(lobbyId);
-addUserToLobby_new(user, lobbyId);
+	addNewLobby_new(lobbyId);
+	addUserToLobby_new(user, lobbyId);
 }
+
 lobby_server.addUserToLobby_new_export = function(authUser, lobbyId){
 	addUserToLobby_new(authUser, lobbyId);
 }
+
 lobby_server.validateId = function(lobbyId){
 	console.log('user tryd to join lobby with id'+ lobbyId);
 	for(var i = 0; i < allLobbies.length; i++){
@@ -83,16 +94,22 @@ lobby_server.validateId = function(lobbyId){
 	}
 	return false;
 }
-addUserToLobby_new = function(authUser, lobbyId){
-	var index = getLobbyIndexFromId(lobbyId);
 
-	for(var i = 0; i< allLobbies[index].slotsTaken.length; i++){
-		if(allLobbies[index].slotsTaken[i] == 0){
-			allLobbies[index].slotsTaken[i] = 1;
+addUserToLobby_new = function(authUser, lobbyId){
+	var lobbyIndex = getLobbyIndexFromId(lobbyId);
+	var lobby = allLobbies[lobbyIndex];
+	var place = 0;
+
+	for(var i = 0; i< lobby.slotsTaken.length; i++){
+		if(lobby.slotsTaken[i] == 0){
+			lobby.slotsTaken[i] = 1;
+			place = i;
 			break;
 		}
 	}
-	lobbyUser(allLobbies[index].lobbyUsers.length, index, authUser, i);
+
+	lobbyUser(lobby.lobbyUsers.length, lobbyIndex, authUser, place);
+	//console.log("slotsTaken: "+lobby.slotsTaken);
 }
 addNewLobby_new = function(lobbyId, maxusers){
 	var randomNumbers = generateRandomBlocks();
@@ -126,7 +143,7 @@ getLobbyList = function(client){
 
 
 //nytt
-getLobbyIdFromSocket = function(user){
+getLobbyIdFromAuth = function(user){
 	for(var i = 0; i < allLobbies.length; i++){
 		for(var j = 0; j < allLobbies[i].lobbyUsers.length; j++){
 			if(user.id === (allLobbies[i].lobbyUsers[j].authUser.id)){
@@ -140,7 +157,13 @@ return 0;
 //nytt
 gameSetup = function(io, socket, data){
 	var authUser = socket.request.user;
-	var lobbyId = getLobbyIdFromSocket(socket.request.user);
+	var lobbyId = getLobbyIdFromAuth(authUser);
+	var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
+	var randomNumbers = getRandomNumbersFromLobby(lobbyId);
+	var users = getUsersFromLobby(lobbyId);
+	var username = authUser.username;
+	var lobbyUser = getUserFromUsername(authUser, lobby);
+
 	if(lobbyId == 0){
 		console.log('no lobby found');
 	}
@@ -148,19 +171,11 @@ gameSetup = function(io, socket, data){
 		console.log('user belong to lobby with id (2): ' + lobbyId);
 	}
 
-
-	var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
-
 	lobby.clients.push(socket);
-  var randomNumbers = getRandomNumbersFromLobby(lobbyId);
-	var users = getUsersFromLobby(lobbyId);
-	var username = socket.request.user.username;
-	console.log(username);
-	var lobbyUser = getUserFromUsername(authUser, lobby);
-	console.log('user got place '+ lobbyUser.place);
-	//game_server.emitToLobby(lobby, {type: 'gameSetupR', randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place});
-	socket.emit('gameSetupR', {randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place});
-	game_server.broadcastToLobby(lobby, socket, {type: 'newPlayer',  users: users, randomNumbers: randomNumbers, username: username, place: lobbyUser.place});
+
+	console.log("slotstaken: "+lobby.slotsTaken);
+	socket.emit('gameSetupR', {distance: distance, blockSize: blockSize, randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place, playerPosition:lobby.slotsTaken});
+	game_server.broadcastToLobby(lobby, socket, {type: 'newPlayer', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, users: users, randomNumbers: randomNumbers, username: username, place: lobbyUser.place});
 }
 
 getUserFromUsername = function(authUser, lobby){
@@ -196,24 +211,15 @@ lobbyIsEmpty = function(data){
 	}
 }
 
-removeLobby = function(data){
-	var removed = false;
-
-	for(var i = 0; i < allLobbies.length; i++){
-		if(removed){
-			allLobbies[i-1] = allLobbies[i];
-		}
-		if(data.id == allLobbies[i].id){
-			removed = true;
-		}
-	}
-	allLobbies.pop();
+removeLobby = function(lobby){
+	indexLobby = allLobbies.indexOf(lobby);
+	allLobbies.splice(indexLobby, 1);
 }
 
 //----- Lobby User Functions -----//
 userIsReady = function(io, socket, data){
 	var authUser = socket.request.user;
-	var lobbyId = getLobbyIdFromSocket(socket.request.user);
+	var lobbyId = getLobbyIdFromAuth(authUser);
   var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
 
 
@@ -224,42 +230,48 @@ userIsReady = function(io, socket, data){
 		if(allUsersInLobbyReady(lobby) && (lobby.lobbyUsers.length > 1)){
 			lobby.randomNumbers = generateRandomBlocks();
 			game_server.emitToLobby(lobby, {type: 'startGame', users: lobby.users, randomNumbers: lobby.randomNumbers});
-			game_server.startGame(lobby);
+			game_server.startGame(lobby, {place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: lobby.randomNumbers, playerPosition:lobby.slotsTaken});
 			console.log("Game started in lobby with ID %s.", data.id);
 		}else{
-			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place});
+			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize});
 		}
 	}
 }
 
 getUserFromAuthUser = function(user, lobby){
-		for(var j = 0; j < lobby.lobbyUsers.length; j++){
-			if(user.id === (lobby.lobbyUsers[j].authUser.id)){
-				return lobby.lobbyUsers[j];
-			}
+	for(var j = 0; j < lobby.lobbyUsers.length; j++){
+		if(user.id === (lobby.lobbyUsers[j].authUser.id)){
+			return lobby.lobbyUsers[j];
 		}
+	}
 }
 
 userIsNotReady = function(io, socket, data){
 	var authUser = socket.request.user;
-	var lobbyId = getLobbyIdFromSocket(socket.request.user);
+	var lobbyId = getLobbyIdFromAuth(authUser);
   var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
 	if(!lobby.isActive){
 		var lobbyUser = getUserFromAuthUser(authUser, lobby);
 		lobbyUser.isReady = false;
 
-		game_server.emitToLobby(lobby, {type: 'userIsNotReady', place:lobbyUser.place});
+		game_server.emitToLobby(lobby, {type: 'userIsNotReady', place:lobbyUser.place, distance:distance, blockSize:blockSize});
 	}
 }
 
-userLeavedLobby = function(client, data){
-	removeUserFromLobby(data);
-	if(lobbyIsEmpty(data)){
-		removeLobby(data);
-		console.log("Removed empty lobby with ID %s.", data.id);
-		return;
+userLeavedLobby = function(io, socket, data){
+	var authUser = socket.request.user;
+	var lobbyId = getLobbyIdFromAuth(authUser);
+	var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
+	var lobbyUser = getUserFromAuthUser(authUser, lobby);
+
+	lobby.slotsTaken[lobbyUser.place] = 0;
+	game_server.emitToLobby(lobby, {type: 'userLeavedLobby', active: lobby.isActive, distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken});
+
+	removeUserFromLobby(lobby, lobbyUser);
+
+	if(lobby.lobbyUsers.length == 0){
+		removeLobby(lobby);
 	}
-	client.emit('gameSetupR',{randomNumbers:getRandomNumbersFromLobby(data), users:getUsersFromLobby(data), id:data.id});
 }
 
 getUserFromId = function(id, indexLobby){
@@ -276,10 +288,9 @@ addUserToLobby = function(client, data){
 	allLobbies[index].clients.push(client);
 }
 
-removeUserFromLobby = function(data){
-	var indexLobby = getLobbyIndexFromId(data.id);
-	var indexUser = allLobbies[indexLobby].lobbyUsers.indexOf(data.user);
-	allLobbies[indexLobby].lobbyUsers.splice(indexUser, 1);
+removeUserFromLobby = function(lobby, lobbyUser){
+	var indexUser = lobby.lobbyUsers.indexOf(lobbyUser);
+	lobby.lobbyUsers.splice(indexUser, 1);
 }
 
 getUsersFromLobby = function(id){
