@@ -2,20 +2,30 @@
 (function(exports){
 
 	exports.startGame = function(boards){
-		for(var i = 0; i < boards.length; i++){//need testing
-			createTetromino(boards[i].currentBlocks, "current", boards[i]);
-			boards[i].isActive = true;
+		for(i = 0; i < boards.length; i++){
+			exports.startGameBoard(boards[i]);
 		}
 	};
 
-	exports.addBoards = function(data, start, list){
-		for(i = start; i < data.users; i++){
-			Board((150*(i+1)-100),100, 'black', blockSizePlayer*20, blockSizePlayer*10, blockSizePlayer, data.username, data.randomNumbers, list);
+	exports.startGameBoard = function(board){
+		createTetromino(board.currentBlocks, "current", board);
+		board.isActive = true;
+	};
+
+	exports.addBoards = function(data, list){
+		for(i = 0; i < data.playerPosition.length; i++){
+			if(data.playerPosition[i] == 1){
+				Board((data.distance*(i+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, data.place, data.playerPosition);
+			}
 		}
 	};
+
+	/*exports.removeBoard = function(data, boards){
+		boards.splice()
+	};*/
 
 	exports.addBoard = function(data, list){
-		Board((150*(data.place+1)-100),100, 'black', blockSizePlayer*20, blockSizePlayer*10, blockSizePlayer, data.username, data.randomNumbers, list);
+		Board((data.distance*(data.place+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, data.place, data.playerPosition);
 	};
 
 	exports.moveBlocksExport = function(keycode, board){
@@ -24,15 +34,27 @@
 
 	exports.updateAllBoards = function(boards){
 		var gameOvers = 0;
-		for(var i = 0; i < boards.length; i++){
+		for(i = 0; i < boards.length; i++){
 			if(boards[i].isActive == true){
-				if(updateBoard(boards[i]) == true){
+				if(exports.updateBoard(boards[i]) == true){
 					boards[i].isActive = false;
 					gameOvers++;
 				}
 			}
 		}
 		return gameOvers;
+	}
+
+	exports.updateBoard = function(board){
+		if(collideDown(board)){
+			addCurrentToAllBlocks(board);
+			fullRowControll(board);
+			board.currentBlocks = [];
+			createTetromino(board.currentBlocks, "current", board);
+		}else{
+			moveBlocks(40, board);
+		}
+		return gameOver(board);
 	}
 
 }(typeof exports === 'undefined'? this.gameCore = {}: exports));
@@ -447,7 +469,7 @@ moveBlocks = function(keycode, board){
 
 //---------- Generall Things ----------//
 //----- Structs -----//
-Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers, boards){
+Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers, boards, place, playerPosition){
 	var board = {
 		x:x,
 		y:y,
@@ -466,6 +488,8 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 		randomNumbersCounter: 0,
 		isActive: false,
 		isReady: false,
+		place: place,
+		playerPosition: playerPosition
 	};
 	boards[boards.length] = board;
 }
@@ -525,21 +549,7 @@ fullRowControll = function(board){
 }
 
 //----- Update Functions -----//
-updateBoard = function(board){
-	if(collideDown(board)){
-		addCurrentToAllBlocks(board);
-		fullRowControll(board);
-		board.currentBlocks = [];
-		/*for(i = 0; i < nextBlocks.length; i++){
-			currentBlocks[currentBlocks.length] = nextBlocks[i];
-		}
-		board.currentBlockType = nextBlockType;
-		nextBlocks = [];
-		createTetromino(nextBlocks, "next", board);*/
-		createTetromino(board.currentBlocks, "current", board);
-
-	}else{
-		moveBlocks(40, board);
-	}
-	return gameOver(board);
-}
+startGameBoard = function(board){
+	createTetromino(board.currentBlocks, "current", board);
+	board.isActive = true;
+};

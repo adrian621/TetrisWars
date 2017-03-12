@@ -5,8 +5,10 @@ var socket = io();
 var boardNumber = -1;
 var speed = 1000; // speed in milliseconds
 var context = document.getElementById("game").getContext("2d");
-var playersActive = [];
 var boards = [];
+var board = [];
+
+//Only so the player can get instant respons, the board will be run on server
 var interval;
 var intervalMove;
 var canMove = true;
@@ -17,7 +19,6 @@ drawBlock = function(block){
 	var x = block.x;
 	var y = block.y;
 	var adress = '../images/small_blocks/block_'+block.color+'.jpg';
-
 	drawPicture(adress, x, y);
 }
 
@@ -45,12 +46,18 @@ drawPicture = function(adress, x, y){
 	}
 }
 
-drawReadyButton= function(data, start){
-	console.log(data.users);
-	for(var i = start; i < data.users; i++){
-		var x = boards[i].x - 10;
-		var y = boards[i].y + boards[i].height+15;
-		drawPicture('../images/waitForReadyButton.png', x, y);
+drawReadyButton= function(place, distance, blockSize){
+	var x = distance*(place+1) - 110;
+	var y = 100 + blockSize*20 + 15;
+	console.log("draw readyButton for "+place);
+	drawPicture('../images/waitForReadyButton.png', x, y);
+}
+
+drawReadyButtonAll= function(data){
+	for(var i = 0; i < data.playerPosition.length; i++){
+		if(data.playerPosition[i] == 1){
+			drawReadyButton(i, data.distance, data.blockSize);
+		}
 	}
 }
 
@@ -65,45 +72,57 @@ updateCanvasBoard = function(board){
 	}
 }
 
-updateCanvas = function(){
-	for(var i=0; i < boards.length; i++){
-		updateCanvasBoard(boards[i]);
+drawBlackBoard = function(place, distance, blockSize){
+		context.fillStyle = board.bgColor;
+		context.fillRect(distance*(place+1)-100, 100, blockSize*10, blockSize*20);
+}
+
+drawBlackBoardsAll = function(data){
+	for(i = 0; i < data.playerPosition.length; i++){
+		if(data.playerPosition[i] == 1){
+			drawBlackBoard(i, data.distance, data.blockSize);
+		}
 	}
 }
+
+//Used when the server sends all boards
+updateCanvas = function(boards){
+	for(var i=0; i < boards.length; i++){
+		updateCanvasBoard(boards[i].place);
+	}
+}
+
 update = function(){
-	gameCore.updateAllBoards(boards);
-	updateCanvas();
-	socket.emit('game' ,{id: lobbyNumber, user: boardNumber, board: boards[boardNumber-1], type:"update"});
+	if(board.isActive == true){
+		if(gameCore.updateBoard(board) == true){// if game over
+			board.isActive = false;
+		}
+	}
+	//socket.emit('game' ,{id: lobbyNumber, user: boardNumber, board: boards[boardNumber-1], type:"update"});
 }
 
 startGame = function(){
-	/*for(var i=0; i < boards.length; i++){
-		context.fillStyle = 'white';
-		context.fillRect(boards[i].x - 10, boards[i].y + boards[i].height+15, 120, 40);
-		context.fillRect((boards[i].x - 10), (boards[i].y - 45), 120, 40);
-	};*/
-	drawPicture('../images/background2.png', 0, 0);
-	gameCore.startGame(boards);
-	updateCanvas();
+	gameCore.startGameBoard(board);
 	interval = setInterval(update, speed);
 }
 
 //----- Events -----//
-addButtonEvent = function(boardNummer){
+//TODO: Buttonevent is not completely on button picture
+addButtonEvent = function(){
 	var canvas = document.getElementById("game");
 	canvas.addEventListener("click", function(event){
 		var rect = canvas.getBoundingClientRect();
 		var x = event.clientX - rect.left;
 		var y = event.clientY - rect.top;
-		if(x > boards[boardNummer].x +(boards[boardNummer].width/4) &&
-			x < boards[boardNummer].x+(boards[boardNummer].width/4)+120 &&
-			y > boards[boardNummer].y+boards[boardNummer].height+15 &&
-			y < (boards[boardNummer].y+boards[boardNummer].height+15)+40){
-				if(boards[boardNumber].isReady == false){
-					boards[boardNumber].isReady = true;
+		if(x > board.x + (board.width/4) &&
+			x < board.x+(board.width/4)+120 &&
+			y > board.y+board.height+15 &&
+			y < (board.y+board.height+15)+40){
+				if(board.isReady == false){
+					board.isReady = true;
 					socket.emit('lobby', {type:"userIsReady"});
-				}else{
-					boards[boardNumber].isReady = false
+				}else{ //if board.isReady == true
+					board.isReady = false
 					socket.emit('lobby', {type:"userIsNotReady"});
 				}
 		}
@@ -113,31 +132,28 @@ addButtonEvent = function(boardNummer){
 window.onload =function(){
 	if(lobbyId){
 	lobbyNumber = lobbyId;
-	}
-	else{
+	}else{
 		lobbyNumber = 0;
 	}
 	drawPicture('../images/background2.png', 0, 0);
-
-	console.log("Innan gamesetup")
 	socket.emit('lobby', {type: "gameSetup"});
-	console.log('skickat gameSetup');
 }
+
 window.onbeforeunload = function(){
 	socket.emit('lobby', {id:lobbyNumber, user:boardNumber, type:"userLeavedLobby"});
 }
 
 window.onkeydown = function(e){
-	if(canMove && boards[boardNumber-1].isActive){
+	if(canMove && board.isActive){
 		canMove = false;
-		gameCore.moveBlocksExport(e.keyCode, boards[boardNumber-1]);
-		updateCanvasBoard(boards[boardNumber-1]);
-		socket.emit('game', {move: e.keyCode, id:lobbyNumber, user:boardNumber, type:"move", board: boards[boardNumber-1]});
+		gameCore.moveBlocksExport(e.keyCode, board);
+		updateCanvasBoard(board);
+		socket.emit('game', {move: e.keyCode, lobbyId:lobbyNumber, place:boardNumber, type:"move", board: board});
 
 		intervalMove = setInterval(function(){
-			gameCore.moveBlocksExport(e.keyCode, boards[boardNumber-1]);
-			updateCanvasBoard(boards[boardNumber-1]);
-			socket.emit('game', {move: e.keyCode, id:lobbyNumber, user:boardNumber, type:"move", board: boards[boardNumber-1]});
+			gameCore.moveBlocksExport(e.keyCode, board);
+			updateCanvasBoard(board);
+			//socket.emit('game', {move: e.keyCode, lobbyId:lobbyNumber, place:boardNumber, type:"move", board: board});
 		}, 100);
 	}
 }
@@ -147,66 +163,68 @@ window.onkeyup = function(e){
 	canMove = true;
 }
 
+
 //----- Socket Communication -----//
-socket.on('userLeavedLobby', function(){
-
-
+socket.on('userLeavedLobby', function(data){
+	if(data.active == false){
+		drawPicture('../images/background2.png', 0, 0);
+		drawReadyButtonAll(data);
+		drawBlackBoardsAll(data);
+	}
 });
 
 socket.on('gameSetupR', function(data){
-		console.log("received gamesetupR");
-
-		boardName = data.username;
-		boardNumber = data.place;
-
-		gameCore.addBoards(data, 0, boards);
-		drawReadyButton(data, 0);
-		addButtonEvent(boardNumber);
-		updateCanvas();
-
+	boardName = data.username;
+	boardNumber = data.place;
+	gameCore.addBoard(data, boards);
+	board = boards[0];
+	drawReadyButtonAll(data);
+	drawBlackBoardsAll(data);
+	addButtonEvent();
 });
 
 socket.on('newPlayer', function(data){
-	gameCore.addBoard(data, boards);
-	drawReadyButton(data, data.place);
-	updateCanvas();
+	//gameCore.addBoard(data, boards);
+	drawReadyButton(data.place, data.distance, data.blockSize);
+	drawBlackBoard(data.place, data.distance, data.blockSize);
 });
 
 socket.on('userIsReady', function(data){
-	var x = boards[data.place].x - 10;
-	var y = boards[data.place].y + boards[data.place].height+15;
+	var x = data.distance*(data.place+1) - 110;
+	var y = 100 + data.blockSize*20 + 15;
 	drawPicture('../images/readyButton.png', x, y);
 });
 
 socket.on('userIsNotReady', function(data){
-	var x = boards[data.place].x - 10;
-	var y = boards[data.place].y + boards[data.place].height+15;
+	var x = data.distance*(data.place+1) - 110;
+	var y = 100 + data.blockSize*20 + 15;
 	drawPicture('../images/waitForReadyButton.png', x, y);
 });
 
 socket.on('startGame', function(data){
-	boards = [];
-	gameCore.addBoards(data, 0, boards);
 	startGame(data.randomNumbers);
 });
 
 socket.on('move', function(data){
-	if(data.user != boardNumber){
-		boards[data.user-1] = data.board;
-		updateCanvasBoard(boards[data.user-1]);
+	updateCanvasBoard(data.board);
+});
+
+socket.on('update', function(data){
+	for(i = 0; i < data.boards.length; i++){
+		if(data.boards[i].place != board.place){
+			updateCanvasBoard(data.boards[i]);
+		}
 	}
 });
 
 socket.on('invalidBoard', function(data){
-	if(data.user == boardNumber){
-		boards[data.user-1] = data.board;
-		updateCanvasBoard(boards[data.user-1]);
-	}
+	board = data.board;
+	updateCanvasBoard(board);
 });
 
 socket.on('winner', function(data){
 	clearInterval(interval);
-	drawReadyButton({users: boards.length}, 0);
+	drawReadyButtonAll(data);
 	var x = boards[data.winner].x - 10;
 	var y = boards[data.winner].y - 45;
 	drawPicture('../images/winnerButton.png', x, y);

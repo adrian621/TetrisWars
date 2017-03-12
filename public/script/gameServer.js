@@ -5,9 +5,10 @@ var interval;
 //----- Variables -----//
 //store this in lobby
 
-game_server.move = function(io, data, lobby){
-	game_core.moveBlocksExport(data.move, lobby.boards[data.user-1]);
-	game_server.emitToLobby(lobby, {type: 'move', id:data.id, user:data.user, board: lobby.boards[data.user-1]});
+game_server.move = function(io, data, lobby, indexUser){
+	// TODO: move this or previous state is not checked !!
+	game_core.moveBlocksExport(data.move, boards[indexUser]);
+	game_server.emitToLobby(lobby, {type: 'move', user:data.user, board: lobby.boards[indexUser]});
 }
 
 game_server.boardIsUpdated = function(data, lobby, client){
@@ -47,7 +48,7 @@ blockListEqual = function(blocks_1, blocks_2){
 	return true;
 }
 
-checkValidity = function(data, lobby){
+checkValidity = function(data, lobby, place){
 	//console.log("data.user: "+data.user);
 
 	//All blocks
@@ -71,7 +72,6 @@ update = function(lobby){
 	for(var i = 0; i < lobby.boards.length; i++){
 		lobby.lobbyUsers[i].lastStateAllBlocks = lobby.boards[i].allBlocks;
 		lobby.lobbyUsers[i].lastStateCurrentBlocks = lobby.boards[i].currentBlocks;
-		//console.log("last state = "+lobby.lobbyUsers[i].lastStateCurrentBlocks);
 	}
 
 	var gameOvers = game_core.updateAllBoards(lobby.boards);
@@ -81,23 +81,30 @@ update = function(lobby){
 		for(var i = 0; i < lobby.lobbyUsers.length; i++){
 			lobby.lobbyUsers[i].isReady = false;
 			if(lobby.boards[i].isActive){
-				winner = i+1;
+				winner = i;
 				lobby.boards[i].isActive = false;
 			}
 		}
 		clearInterval(interval);
+		//TODO: find correct winner
 		game_server.emitToLobby(lobby, {type: 'winner', winner: winner});
 		lobby.isActive = false;
 	}
-	for(var i = 0; i < lobby.boards.length; i++){
-
-		game_server.emitToLobby(lobby, {type: 'move', user:i+1, board: lobby.boards[i]});
-	}
+	game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards});
 }
 
-game_server.startGame = function(lobby){
+game_server.startGame = function(lobby, data){
 	lobby.boards = [];
-	game_core.addBoards({randomNumbers: lobby.randomNumbers, users: lobby.lobbyUsers.length}, 0, lobby.boards);
+	game_core.addBoards(data, lobby.boards);
 	game_core.startGame(lobby.boards);
 	interval = setInterval(function(){update(lobby);}, 1000);
+}
+
+getBoardFromPlace = function(lobby, place){
+	for(i=0; i < lobby.boards.length; i++){
+		if(lobby.boards[i].place == place){
+			return boards[i];
+		}
+		console.log("Board not found");
+	}
 }
