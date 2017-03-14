@@ -15,7 +15,7 @@
 	exports.addBoards = function(data, list){
 		for(i = 0; i < data.playerPosition.length; i++){
 			if(data.playerPosition[i] == 1){
-				Board((data.distance*(i+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, data.place, data.playerPosition);
+				Board((data.distance*(i+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, i, data.playerPosition);
 			}
 		}
 	};
@@ -29,20 +29,21 @@
 	};
 
 	exports.moveBlocksExport = function(keycode, board){
+		console.log("gamecore move");
 		moveBlocks(keycode, board);
 	}
 
 	exports.updateAllBoards = function(boards){
-		var gameOvers = 0;
-		for(i = 0; i < boards.length; i++){
+		var gameOversThisRound = [];
+		for(var i = 0; i < boards.length; i++){
 			if(boards[i].isActive == true){
-				if(exports.updateBoard(boards[i]) == true){
-					boards[i].isActive = false;
-					gameOvers++;
+				exports.updateBoard(boards[i]);
+				if(boards[i].isActive == false){
+					gameOversThisRound.push(boards[i].place);
 				}
 			}
 		}
-		return gameOvers;
+		return gameOversThisRound;
 	}
 
 	exports.updateBoard = function(board){
@@ -54,7 +55,9 @@
 		}else{
 			moveBlocks(40, board);
 		}
-		return gameOver(board);
+		if(gameOver(board) == true){
+			board.isActive = false;
+		}
 	}
 
 }(typeof exports === 'undefined'? this.gameCore = {}: exports));
@@ -489,7 +492,9 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 		isActive: false,
 		isReady: false,
 		place: place,
-		playerPosition: playerPosition
+		playerPosition: playerPosition,
+		lastStateAllBlocks: [],
+		lastStateCurrentBlocks: []
 	};
 	boards[boards.length] = board;
 }

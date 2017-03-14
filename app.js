@@ -154,17 +154,16 @@ console.log('Server is running.');
 io.on('connection', function(socket){
 	socket.on('lobby', function(data){
     if(socket.request.user && socket.request.user.logged_in){
-    console.log(data.type);
     lobby_server.lobbyFunctions(socket, data, io);
     }
 	});
 
-/*
+
   socket.on('game', function(data){
     if(socket.request.user && socket.request.user.logged_in){
 		lobby_server.gameFunctions(socket, data, io);
     }
-	});*/
+	});
 
   /*
   socket.on('disconnect', function(){

@@ -1,14 +1,20 @@
 var game_server = module.exports = {};
 var game_core = require('./gameCore');
+
+//TODO: need several intervals
 var interval;
 
 //----- Variables -----//
 //store this in lobby
 
-game_server.move = function(io, data, lobby, indexUser){
-	// TODO: move this or previous state is not checked !!
-	game_core.moveBlocksExport(data.move, boards[indexUser]);
-	game_server.emitToLobby(lobby, {type: 'move', user:data.user, board: lobby.boards[indexUser]});
+game_server.move = function(io, data, lobby, indexUser, socket){
+	// TODO: checked moved on the server side
+	if(checkValidity(data, lobby, indexUser)){
+		game_core.moveBlocksExport(data.move, lobby.boards[indexUser]);
+		game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.boards[indexUser]});
+	}else{
+		socket.emit('invalidBoard', {board: lobby.boards[indexUser]});
+	}
 }
 
 game_server.boardIsUpdated = function(data, lobby, client){
@@ -48,48 +54,65 @@ blockListEqual = function(blocks_1, blocks_2){
 	return true;
 }
 
-checkValidity = function(data, lobby, place){
+checkValidity = function(data, lobby, indexUser){
 	//console.log("data.user: "+data.user);
+	var board = data.board;
 
 	//All blocks
-	if(!blockListEqual(lobby.boards[data.user-1].allBlocks, data.board.allBlocks)){
-		if(!blockListEqual(lobby.lobbyUsers[data.user-1].lastStateAllBlocks, data.board.allBlocks)){
+	/*if(!blockListEqual(lobby.boards[indexUser].allBlocks, board.allBlocks)){
+		if(!blockListEqual(lobby.lobbyUsers[indexUser].lastStateAllBlocks, board.allBlocks)){
 			return false;
 		}
-	}
+	}*/
+
+	var tempBoard = lobby.boards[indexUser];
+	var tempBoardLastState = lobby.lastStateBoards[indexUser];
+
+	moveBlocks(data.move, tempBoard);
+	moveBlocks(data.move, tempBoardLastState);
 
 	//Current blocks
-	if(!blockListEqual(lobby.boards[data.user-1].currentBlocks, data.board.currentBlocks)){
-		if(!blockListEqual(lobby.lobbyUsers[data.user-1].lastStateCurrentBlocks, data.board.currentBlocks)){
+	if(!blockListEqual(tempBoard.currentBlocks, board.currentBlocks)){
+		if(!blockListEqual(tempBoardLastState.currentBlocks, board.currentBlocks)){
 			return false;
 		}
 	}
-
 	return true;
 }
 
 update = function(lobby){
 	for(var i = 0; i < lobby.boards.length; i++){
-		lobby.lobbyUsers[i].lastStateAllBlocks = lobby.boards[i].allBlocks;
-		lobby.lobbyUsers[i].lastStateCurrentBlocks = lobby.boards[i].currentBlocks;
+		lobby.lastStateBoards[i] = lobby.boards[i];
+		//lobby.boards[i].lastStateAllBlocks = lobby.boards[i].allBlocks;
+		//lobby.boards[i].lastStateCurrentBlocks = lobby.boards[i].currentBlocks;
 	}
 
-	var gameOvers = game_core.updateAllBoards(lobby.boards);
+	var newGameOvers = game_core.updateAllBoards(lobby.boards);
 
-	if (gameOvers >= lobby.lobbyUsers.length-1){
-		var winner = 0;
-		for(var i = 0; i < lobby.lobbyUsers.length; i++){
-			lobby.lobbyUsers[i].isReady = false;
+	//TODO: if two users lose on same round, make them get same rank
+
+	lobby.gameOvers = lobby.gameOvers + newGameOvers;
+
+	if (lobby.gameOvers.length >= lobby.boards.length-1){
+		clearInterval(interval);
+
+		var winner = "";
+
+		//TODO: if both last users lost at same time
+		for(var i = 0; i < lobby.boards.length; i++){
 			if(lobby.boards[i].isActive){
-				winner = i;
+				winner = lobby.boards[i].username;
 				lobby.boards[i].isActive = false;
 			}
 		}
-		clearInterval(interval);
-		//TODO: find correct winner
 		game_server.emitToLobby(lobby, {type: 'winner', winner: winner});
+		for(i=0; i < lobby.lobbyUsers.length; i++){
+			lobby.lobbyUsers[i].isReady = false;
+		}
 		lobby.isActive = false;
 	}
+
+	//TODO: get new randomnumbers for next game, get rank
 	game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards});
 }
 
@@ -105,6 +128,5 @@ getBoardFromPlace = function(lobby, place){
 		if(lobby.boards[i].place == place){
 			return boards[i];
 		}
-		console.log("Board not found");
 	}
 }
