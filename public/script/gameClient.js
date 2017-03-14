@@ -94,11 +94,9 @@ updateCanvas = function(boards){
 
 update = function(){
 	if(board.isActive == true){
-		if(gameCore.updateBoard(board) == true){// if game over
-			board.isActive = false;
-		}
+		gameCore.updateBoard(board);
 	}
-	//socket.emit('game' ,{id: lobbyNumber, user: boardNumber, board: boards[boardNumber-1], type:"update"});
+	updateCanvasBoard(board);
 }
 
 startGame = function(){
@@ -148,13 +146,14 @@ window.onkeydown = function(e){
 		canMove = false;
 		gameCore.moveBlocksExport(e.keyCode, board);
 		updateCanvasBoard(board);
-		socket.emit('game', {move: e.keyCode, lobbyId:lobbyNumber, place:boardNumber, type:"move", board: board});
+		socket.emit('game', {move: e.keyCode, type:"move", board: board});
 
 		intervalMove = setInterval(function(){
 			gameCore.moveBlocksExport(e.keyCode, board);
 			updateCanvasBoard(board);
+			socket.emit('game', {move: e.keyCode, type:"move", board: board});
 			//socket.emit('game', {move: e.keyCode, lobbyId:lobbyNumber, place:boardNumber, type:"move", board: board});
-		}, 100);
+		}, 300);
 	}
 }
 
@@ -202,7 +201,9 @@ socket.on('userIsNotReady', function(data){
 });
 
 socket.on('startGame', function(data){
-	startGame(data.randomNumbers);
+	drawPicture('../images/background2.png', 0, 0);
+	drawBlackBoardsAll(data);
+	startGame(board.randomNumbers);
 });
 
 socket.on('move', function(data){
@@ -218,6 +219,7 @@ socket.on('update', function(data){
 });
 
 socket.on('invalidBoard', function(data){
+	console.log("invalid board correction");
 	board = data.board;
 	updateCanvasBoard(board);
 });
