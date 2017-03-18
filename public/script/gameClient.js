@@ -148,12 +148,11 @@ window.onkeydown = function(e){
 		updateCanvasBoard(board);
 		socket.emit('game', {move: e.keyCode, type:"move", board: board});
 
-		intervalMove = setInterval(function(){
+		/*intervalMove = setInterval(function(){
 			gameCore.moveBlocksExport(e.keyCode, board);
 			updateCanvasBoard(board);
 			socket.emit('game', {move: e.keyCode, type:"move", board: board});
-			//socket.emit('game', {move: e.keyCode, lobbyId:lobbyNumber, place:boardNumber, type:"move", board: board});
-		}, 300);
+		}, 300);*/
 	}
 }
 
@@ -221,7 +220,7 @@ socket.on('update', function(data){
 socket.on('invalidBoard', function(data){
 	console.log("invalid board correction");
 	board = data.board;
-	updateCanvasBoard(board);
+	updateCanvasBoard(data.board);
 });
 
 socket.on('winner', function(data){

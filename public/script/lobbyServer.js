@@ -49,9 +49,11 @@ lobbyUser = function(id, index, authUser, place){
 	lobby.lobbyUsers[lobby.lobbyUsers.length] = lobbyUser;
 }
 
-lobby = function(id, randomNumbers, maxusers){
+lobby = function(id, randomNumbers, maxusers, name, password){
 	var lobby = {
+		name: name,
 		id: id,
+		psw: password,
 		randomNumbers: randomNumbers,
 		lobbyUsers: [],
 		isActive: false,
@@ -66,9 +68,14 @@ lobby = function(id, randomNumbers, maxusers){
 }
 
 //----- Lobby Functions -----//
-lobby_server.createLobby = function(lobbyId, user, maxusers){
-	addNewLobby(lobbyId);
+lobby_server.createLobby = function(lobbyId, user, maxusers, name, password){
+	addNewLobby(lobbyId, maxusers, name, password);
 	addUserToLobby_new(user, lobbyId);
+}
+
+addNewLobby = function(lobbyId, maxusers, name, password){
+	var randomNumbers = generateRandomBlocks();
+	lobby(lobbyId, randomNumbers, maxusers, name, password);
 }
 
 lobby_server.addUserToLobby_new_export = function(authUser, lobbyId){
@@ -99,10 +106,6 @@ addUserToLobby_new = function(authUser, lobbyId){
 
 	lobbyUser(lobby.lobbyUsers.length, lobbyIndex, authUser, place);
 }
-addNewLobby = function(lobbyId, maxusers){
-	var randomNumbers = generateRandomBlocks();
-	lobby(lobbyId, randomNumbers, maxusers);
-}
 
 authUserInLobby= function(lobbyId, socket){
 	var index = getLobbyIndexFromId(lobbyId);
@@ -126,6 +129,25 @@ getLobbyList = function(client){
 	var lobbyListNoClients = allLobbies;
 	removeClients(lobbyListNoClients);
 	client.emit('lobbyList',{lobbyList: lobbyListNoClients});
+}
+
+lobby_server.getLobbyList2 = function(){
+//	var allInfo = ;
+	var ids = [];
+	var maxUsers = [];
+	var users = [];
+	var passwords = [];
+	var name = [];
+	
+	for(var i = 0; i < allLobbies.length; i++){
+		ids[i] = [allLobbies[i].id];
+		maxUsers[i] = [allLobbies[i].maxUsers];
+		users[i] = [allLobbies[i].lobbyUsers.length];
+		passwords[i] = [allLobbies[i].psw];
+		name[i] = [allLobbies[i].name];
+	}
+
+	return {ids: ids, maxUsers:maxUsers, users: users, passwords:passwords, name:name};
 }
 
 
