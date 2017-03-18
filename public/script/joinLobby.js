@@ -21,47 +21,78 @@ window.onload=function(){
 
 //Detta ska ändras en del.
 //Det som istället ska skickas till server Är template vaiable {{lobbyId}}
+
+splitAll = function(){
+
+
+}
+
 newLobbyList = function(){
 
 	var tableBody= document.getElementById('tableBody');
-	console.log(lobbyNames);
-	/*
-	for(var i = 0; i < lobbyNames.length i++){
+	var lobbyNamesList = lobbyNames.split(",");
+	var lobbyIdsList = lobbyIds.split(",");
+	var maxUsersList = lobbyMaxUsers.split(",");
+	var passwordList = lobbyPassword.split(",");
+	var usersList = lobbyUsers.split(",");
+
+	if(lobbyNamesList[0] == ""){
+		return;
+	}
+
+	for(var i = 0; i < lobbyNamesList.length; i++){
 		var tr = document.createElement('tr');
 
 		//Create elements
+		var lobbyId = document.createElement('td');
 		var lobbyName = document.createElement('td');
 		var users = document.createElement('td');
 		var maxUsers = document.createElement('td');
 		var psw = document.createElement('td');
 		var tdButton = document.createElement('td');
-		var button = document.createElement('button');
+		var joinbutton = document.createElement('button');
 		var buttonText = document.createTextNode("Join");
 
 
 		//Define the content of the elements
-  	lobbyName.innerHTML = lobbyInfo.[0][i];
-  	users.innerHTML = lobbyInfo.[1][i];
-  	maxUsers.innerHTML = lobbyInfo.[2][i];
-  	psw.innerHTML = "no";
-		button.createTextNode = "Join";
-		button.setAttribute('type', 'button');
-		button.className = "btn btn-primary";
-		button.onclick = setValue(lobbyInfo.[4][i]);
+  	lobbyName.innerHTML = lobbyNamesList[i];
+  	users.innerHTML = usersList[i];
+  	maxUsers.innerHTML = maxUsersList[i];
+  	psw.innerHTML = passwordList[i];
+		joinbutton.createTextNode = "Join";
+		joinbutton.setAttribute('type', 'button');
+		joinbutton.className = "btn btn-primary";
+		//var joinbutton.innerHTML = "<button type='button' class='btn btn-primary' onclick='setValue("+lobbyIdsList[i]+")'>Join</button>";
+		console.log(lobbyIdsList[i]);
+
 
 		//Append the children
 		tr.appendChild(lobbyName);
 		tr.appendChild(users);
 		tr.appendChild(maxUsers);
 		tr.appendChild(psw);
-		button.appendChild(buttonText);
-		tdButton.appendChild(button);
+		joinbutton.appendChild(buttonText);
+		tdButton.appendChild(joinbutton);
 		tr.appendChild(tdButton);
 		tableBody.appendChild(tr);
-	}
-	*/
-}
+		console.log(tdButton.childNodes);
 
+
+		joinbutton.onclick = (function(id) {return function() {
+			console.log("id is "+id);
+		  var form = document.getElementById("joinForm");
+		  form.join.value = id;
+		  document.forms["joinForm"].submit();
+};})(lobbyIdsList[i]);
+}}
+
+
+function setValue(id){
+	console.log("id is "+id);
+  var form = document.getElementById("joinForm");
+  form.join.value = id;
+  document.forms["joinForm"].submit();
+}
 
 
 /*
