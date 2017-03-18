@@ -39,6 +39,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var gameRoutes = require('./routes/gameRoutes');
 var UserModel = require('./models/user');
+var socketValidation = require('./validation/socketValidation');
 
 
 app.set('views', path.join(__dirname, 'views/layouts'));
@@ -151,17 +152,22 @@ server.listen(process.env.PORT || 2000);
 console.log('Server is running.');
 
 
+
 io.on('connection', function(socket){
 	socket.on('lobby', function(data){
     if(socket.request.user && socket.request.user.logged_in){
-    lobby_server.lobbyFunctions(socket, data, io);
-    }
-	});
+      if(socketValidation.validate(data, 'lobby')){
+        lobby_server.lobbyFunctions(socket, data, io);
+        }
+      }
+	      });
 
 
-  socket.on('game', function(data){
+    socket.on('game', function(data){
     if(socket.request.user && socket.request.user.logged_in){
+      if(socketValidation.validate(data, 'game')){
 		lobby_server.gameFunctions(socket, data, io);
+    }
     }
 	});
 

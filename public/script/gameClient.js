@@ -61,6 +61,8 @@ drawReadyButtonAll= function(data){
 	}
 }
 
+//return = {id: allIDs, maxuse}
+
 updateCanvasBoard = function(board){
 	context.fillStyle = board.bgColor;
 	context.fillRect(board.x, board.y, board.width, board.height);
