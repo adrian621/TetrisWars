@@ -29,7 +29,7 @@
 	};
 
 	exports.moveBlocksExport = function(keycode, board){
-		console.log("gamecore move");
+		console.log("gamecore move from "+board.place);
 		moveBlocks(keycode, board);
 	}
 

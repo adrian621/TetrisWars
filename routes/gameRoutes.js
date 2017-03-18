@@ -5,6 +5,13 @@ var shortid = require('shortid');
 var Authfunc = require('../models/auth');
 var lobby_server = require('../public/script/lobbyServer');
 
+
+router.get('/lobby', Authfunc.ensureauth ,function(req, res){
+  var lobbyInfo = lobby_server.getLobbyList2();
+  res.render('lobby', {lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids});
+});
+
+
 router.get('/createLobby', Authfunc.ensureauth ,function(req, res){
   res.render('createLobby');
 });
@@ -15,8 +22,8 @@ router.get('/game', Authfunc.ensureauth, function(req, res){
 });
 router.post('/createLobby', Authfunc.ensureauth, function(req, res){
 
-  var lobbyId = '1';//shortid.generate();
-  lobby_server.createLobby(lobbyId, req.user, 5);
+  var lobbyId = shortid.generate();
+  lobby_server.createLobby(lobbyId, req.user, 5, "The Flying Dragon", "");
   req.flash('lobbyId', lobbyId);
   res.redirect('game');
 });
