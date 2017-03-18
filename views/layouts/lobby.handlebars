@@ -1,0 +1,53 @@
+<h2>Lobbies</h2>
+{{!-- Här skicks lobbyId för specifik lobby till server. Skriv om så att rätt lobbyId skickas --}}
+<form id = "joinForm" method = "post" action="/joinLobby">
+  <label>skriv in lobbyId för Test och utveckling</label>
+   <input type = "hidden" id = "join" name = "lobbyId" value="">
+  <a href ="#" onclick = "setValue();">submit</a>
+</form>
+
+<br/>
+<div class="customBox">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Lobbyname</th>
+        <th>Users in Lobby</th>
+        <th>Max Users</th>
+        <th>Need Password</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody id = 'tableBody'>
+      <!--
+      <tr>
+        <td>The Dragons</td>
+        <td>5</td>
+        <td>7</td>
+        <td>No</td>
+        <td><a href = "game"><button type="button" class="btn btn-primary" id = "NewLobbyButton2">Join</button></a></td>
+      </tr>  -->
+    </tbody>
+
+  </table>
+  <ul id = "allLobbysList"></ul>
+</div>
+
+<script>
+var lobbyNames =  "{{ lobbyNames }}";
+var lobbyIds =  "{{ lobbyIds }}";
+function setValue(){
+  var form = document.getElementById("joinForm");
+  form.join.value = lobbies[0];
+  document.forms["joinForm"].submit();
+
+}
+
+</script>
+<script src = "/script/joinLobby.js"></script>
+
+<div id = "createLobby">
+  <!-- <input type = "button" value = "Create new lobby" id = "NewLobbyButton"> </input> -->
+  <a href = "createLobby"><button type="button" class="btn btn-primary" id = "NewLobbyButton">Create lobby</button></a>
+</div>
