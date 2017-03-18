@@ -1,9 +1,7 @@
 <h2>Lobbies</h2>
 {{!-- Här skicks lobbyId för specifik lobby till server. Skriv om så att rätt lobbyId skickas --}}
 <form id = "joinForm" method = "post" action="/joinLobby">
-  <label>skriv in lobbyId för Test och utveckling</label>
-   <input type = "hidden" id = "join" name = "lobbyId" value="">
-  <a href ="#" onclick = "setValue();">submit</a>
+   <input type = "hidden" id = "join" name = "lobbyId" value=""></input>
 </form>
 
 <br/>
@@ -37,12 +35,10 @@
 <script>
 var lobbyNames =  "{{ lobbyNames }}";
 var lobbyIds =  "{{ lobbyIds }}";
-function setValue(){
-  var form = document.getElementById("joinForm");
-  form.join.value = lobbies[0];
-  document.forms["joinForm"].submit();
+var lobbyMaxUsers = "{{ lobbyMaxUsers }}";
+var lobbyPassword = "{{ lobbyPassword }}";
+var lobbyUsers = "{{ lobbyUsers }}";
 
-}
 
 </script>
 <script src = "/script/joinLobby.js"></script>

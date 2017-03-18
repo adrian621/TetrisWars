@@ -138,12 +138,12 @@ lobby_server.getLobbyList2 = function(){
 	var users = [];
 	var passwords = [];
 	var name = [];
-	
+
 	for(var i = 0; i < allLobbies.length; i++){
 		ids[i] = [allLobbies[i].id];
 		maxUsers[i] = [allLobbies[i].maxUsers];
 		users[i] = [allLobbies[i].lobbyUsers.length];
-		passwords[i] = [allLobbies[i].psw];
+		passwords[i] = "no";
 		name[i] = [allLobbies[i].name];
 	}
 

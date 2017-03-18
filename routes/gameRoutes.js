@@ -8,7 +8,7 @@ var lobby_server = require('../public/script/lobbyServer');
 
 router.get('/lobby', Authfunc.ensureauth ,function(req, res){
   var lobbyInfo = lobby_server.getLobbyList2();
-  res.render('lobby', {lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids});
+  res.render('lobby', {lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids, lobbyUsers: lobbyInfo.users, lobbyMaxUsers: lobbyInfo.maxUsers, lobbyPassword: lobbyInfo.passwords});
 });
 
 
