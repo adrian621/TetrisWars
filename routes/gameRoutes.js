@@ -21,7 +21,6 @@ router.get('/game', Authfunc.ensureauth, function(req, res){
   //send some info about lobby
 });
 router.post('/createLobby', Authfunc.ensureauth, function(req, res){
-
   var lobbyId = shortid.generate();
   lobby_server.createLobby(lobbyId, req.user, 5, "The Flying Dragon", "");
   req.flash('lobbyId', lobbyId);
