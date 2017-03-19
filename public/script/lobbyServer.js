@@ -1,5 +1,6 @@
 var lobby_server = module.exports = {};
 var game_server = require('./gameServer');
+var genLobbyList = require('./genLobbyList');
 var allLobbies = [];
 var distance = 150;
 var blockSize = 10;
@@ -76,6 +77,7 @@ lobby_server.createLobby = function(lobbyId, user, maxusers, name, password){
 addNewLobby = function(lobbyId, maxusers, name, password){
 	var randomNumbers = generateRandomBlocks();
 	lobby(lobbyId, randomNumbers, maxusers, name, password);
+	genLobbyList.NewLobby(name, lobbyId, 1, maxusers, "no");
 }
 
 lobby_server.addUserToLobby_new_export = function(authUser, lobbyId){
@@ -105,6 +107,7 @@ addUserToLobby_new = function(authUser, lobbyId){
 	}
 
 	lobbyUser(lobby.lobbyUsers.length, lobbyIndex, authUser, place);
+	genLobbyList.updateLobby(lobbyId, lobby.lobbyUsers.length);
 }
 
 authUserInLobby= function(lobbyId, socket){
@@ -291,6 +294,7 @@ addUserToLobby = function(client, data){
 removeUserFromLobby = function(lobby, lobbyUser){
 	var indexUser = lobby.lobbyUsers.indexOf(lobbyUser);
 	lobby.lobbyUsers.splice(indexUser, 1);
+	genLobbyList.updateLobby(lobby.id, lobby.lobbyUsers.length);
 }
 
 getUsersFromLobby = function(id){
