@@ -49,7 +49,6 @@ drawPicture = function(adress, x, y){
 drawReadyButton= function(place, distance, blockSize){
 	var x = distance*(place+1) - 110;
 	var y = 100 + blockSize*20 + 15;
-	console.log("draw readyButton for "+place);
 	drawPicture('../images/waitForReadyButton.png', x, y);
 }
 
@@ -220,7 +219,7 @@ socket.on('update', function(data){
 });
 
 socket.on('invalidBoard', function(data){
-	console.log("invalid board correction");
+	//console.log("invalid board correction");
 	board = data.board;
 	updateCanvasBoard(data.board);
 });
@@ -228,8 +227,8 @@ socket.on('invalidBoard', function(data){
 socket.on('winner', function(data){
 	clearInterval(interval);
 	drawReadyButtonAll(data);
-	var x = boards[data.winner].x - 10;
-	var y = boards[data.winner].y - 45;
+	var x = boards[data.place].x - 10;
+	var y = boards[data.place].y - 45;
 	drawPicture('../images/winnerButton.png', x, y);
 	boards[data.winner].isActive = false;
 });

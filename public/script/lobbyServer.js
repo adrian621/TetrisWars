@@ -163,7 +163,7 @@ getLobbyIdFromAuth = function(user){
 			}
 		}
 	}
-return 0;
+	return 0;
 }
 
 //nytt
@@ -228,13 +228,11 @@ userIsReady = function(io, socket, data){
 		lobbyUser.isReady = true;
 
 		if(allUsersInLobbyReady(lobby) && (lobby.lobbyUsers.length > 1)){
-			//Clients start game
 			lobby.isActive = true;
-			game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken});
-
-			//Server starts game TODO: set username to username
+			setTimeout(function(){
+				game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken});
+    	}, 600); 
 			game_server.startGame(lobby, {username:lobbyUser.place, place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: lobby.randomNumbers, playerPosition:lobby.slotsTaken});
-
 		}else{
 			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize});
 		}
