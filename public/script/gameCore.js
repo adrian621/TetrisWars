@@ -29,13 +29,14 @@
 	};
 
 	exports.moveBlocksExport = function(keycode, board){
-		console.log("gamecore move from "+board.place);
 		moveBlocks(keycode, board);
 	}
 
 	exports.updateAllBoards = function(boards){
 		var gameOversThisRound = [];
+		var times = [];
 		for(var i = 0; i < boards.length; i++){
+			times.push(boards[i].time);
 			if(boards[i].isActive == true){
 				exports.updateBoard(boards[i]);
 				if(boards[i].isActive == false){
@@ -43,10 +44,12 @@
 				}
 			}
 		}
+		console.log(times);
 		return gameOversThisRound;
 	}
 
 	exports.updateBoard = function(board){
+		board.time = board.time + 1;
 		if(collideDown(board)){
 			addCurrentToAllBlocks(board);
 			fullRowControll(board);
@@ -370,7 +373,6 @@ changeForm = function(form, board){
 	changeCorrectForm(form, board);
 
 	if(collide(board)){
-		console.log("collide");
 		changeCorrectForm(form+1, board);
 		changeCorrectForm(form+2, board);
 		changeCorrectForm(form+3, board);
@@ -494,11 +496,11 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 		place: place,
 		playerPosition: playerPosition,
 		lastStateAllBlocks: [],
-		lastStateCurrentBlocks: []
+		lastStateCurrentBlocks: [],
+		time: 0
 	};
 	boards[boards.length] = board;
 }
-
 
 //----- Game Logic Functions -----//
 gameOver = function(board){
@@ -546,11 +548,8 @@ fullRowControll = function(board){
 		//Checks if row is full
 		if(counter[r] == (board.width/board.blockSize)){
 			//Row is full
-			//console.log("row full");
 			moveDownAboveOrDelete((r*(board.blockSize) + board.y), board);
 			rowWasCleared = true;
 		}
 	}
 }
-
-//----- Update Functions -----//

@@ -8,12 +8,7 @@ var interval;
 //store this in lobby
 
 game_server.move = function(io, data, lobby, indexUser, socket){
-	// TODO: checked moved on the server side
-	if(checkValidity(data, lobby, indexUser)){
-		console.log("valid board");
-		lobby.boards[indexUser].currentBlocks = data.board.currentBlocks;
-		game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.boards[indexUser]});
-	}else{
+	if(checkValidity(data, lobby, indexUser, socket) == false){
 		socket.emit('invalidBoard', {board: lobby.boards[indexUser]});
 	}
 }
@@ -40,17 +35,14 @@ game_server.broadcastToLobby = function(lobby, socket, data){
 
 blockListEqual = function(blocks_1, blocks_2){
 	if(blocks_1.length != blocks_2.length){
-		console.log("Wrong lengths!");
 		return false;
 	}
 
 	for(var i = 0; i < blocks_1.length; i++){
 		if(blocks_1[i].x != blocks_2[i].x){
-			console.log("Wrong block on "+i+" with blocks x "+[blocks_1[i].x, blocks_2[i].x]);
 			return false;
 		}
 		if(blocks_1[i].y != blocks_2[i].y){
-			console.log("Wrong block on "+i+" with blocks y "+[blocks_1[i].y, blocks_2[i].y]);
 			return false;
 		}
 	}
@@ -58,32 +50,60 @@ blockListEqual = function(blocks_1, blocks_2){
 	return true;
 }
 
-checkValidity = function(data, lobby, indexUser){
-	//console.log("data.user: "+data.user);
+checkValidity = function(data, lobby, indexUser, socket){
 	var board = data.board;
-	var tempBoard = lobby.boards[indexUser];
-	var tempBoardLastState = lobby.lastStateBoards[indexUser];
+	var tempBoard = JSON.parse(JSON.stringify(lobby.boards[indexUser]));
+	var tempBoardLastState = JSON.parse(JSON.stringify(lobby.lastStateBoards[indexUser]));
 
-	moveBlocks(data.move, tempBoard);
-	moveBlocks(data.move, tempBoardLastState);
-
-	//Current blocks
-	if(!blockListEqual(tempBoard.currentBlocks, board.currentBlocks)){
-		console.log("invalid this state");
-		if(!blockListEqual(tempBoardLastState.currentBlocks, board.currentBlocks)){
-			console.log("invalid last state");
+	if(board.time == tempBoard.time){ //this state
+		console.log("Current state");
+		game_core.moveBlocksExport(data.move, tempBoard);
+		if(!blockListEqual(tempBoard.currentBlocks, board.currentBlocks)){
+			console.log("Different blocks");
 			return false;
+		}else{//Correct in this state
+			console.log("Correct blocks");
+			if(lobby.boards[indexUser].time == tempBoard.time){
+				console.log("State is not updated");
+				game_core.moveBlocksExport(data.move, lobby.boards[indexUser]);
+				game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.boards[indexUser]});
+			}else{//*this* state is now last state
+				console.log("State has updated");
+				game_core.moveBlocksExport(data.move, lobby.lastStateBoards[indexUser]);
+				lobby.boards[indexUser] = JSON.parse(JSON.stringify(lobby.lastStateBoards[indexUser]));
+				game_core.updateBoard(lobby.boards[indexUser]);
+				game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.lastStateBoards[indexUser]});
+			}
 		}
+	}else if(board.time == tempBoardLastState.time){ //last state
+		console.log("Last state");
+		game_core.moveBlocksExport(data.move, tempBoardLastState);
+		if(!blockListEqual(tempBoardLastState.currentBlocks, board.currentBlocks)){
+			console.log("Different blocks");
+			return false;
+		}else{//Correct in last state
+			if(lobby.boards[indexUser].time == tempBoardLastState.time){
+				console.log("State is not updated");
+				game_core.moveBlocksExport(data.move, lobby.lastStateBoards[indexUser]);
+				game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.lastStateBoards[indexUser]});
+			}else{//*last* state is now last state
+				console.log("State has updated. Superslow internet. Can this even happen?");
+				return false;
+			}
+		}
+	}else{//if invalid time
+		console.log("Invalid time: "+board.time+" (your), "+tempBoard.time+" (current)");
+		return false;
 	}
+
 	console.log("Valid state!");
 	return true;
 }
 
 update = function(lobby){
 	for(var i = 0; i < lobby.boards.length; i++){
-		lobby.lastStateBoards[i] = lobby.boards[i];
+		lobby.lastStateBoards[i] = JSON.parse(JSON.stringify(lobby.boards[i]));
 	}
-	game_server.emitToLobby(lobby, {type:'invalidBoard', board: lobby.boards[0]});
 
 	var newGameOvers = game_core.updateAllBoards(lobby.boards);
 
@@ -99,11 +119,12 @@ update = function(lobby){
 		//TODO: if both last users lost at same time
 		for(var i = 0; i < lobby.boards.length; i++){
 			if(lobby.boards[i].isActive){
-				winner = lobby.boards[i].username;
+				var winner = lobby.boards[i].username;
+				var place = lobby.boards[i].place;
 				lobby.boards[i].isActive = false;
 			}
 		}
-		game_server.emitToLobby(lobby, {type: 'winner', winner: winner});
+		game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken});
 		for(i=0; i < lobby.lobbyUsers.length; i++){
 			lobby.lobbyUsers[i].isReady = false;
 		}
