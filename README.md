@@ -1,6 +1,7 @@
 # TetrisWars
 
+A Tetris multiplayer game built in javascript
 
-#how to run:
+## Description
 
-install redis: Brew install redis
+Very fun come play :)
