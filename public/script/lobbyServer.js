@@ -84,6 +84,20 @@ lobby_server.addUserToLobby_new_export = function(authUser, lobbyId){
 	addUserToLobby_new(authUser, lobbyId);
 }
 
+//Ensure User not in specific lobby
+lobby_server.ensureUserNotInLobby = function(user){
+	for(var i = 0; i < allLobbies.length; i++){
+		for(var j = 0; j < allLobbies[i].lobbyUsers.length; j++){
+			if((allLobbies[i].lobbyUsers[j].authUser.id) == user.id){
+				return false;
+			}
+		}
+	}
+	return true;		
+}
+
+
+
 lobby_server.validateId = function(lobbyId){
 	for(var i = 0; i < allLobbies.length; i++){
 		if(allLobbies[i].id == lobbyId){
@@ -231,7 +245,7 @@ userIsReady = function(io, socket, data){
 			lobby.isActive = true;
 			setTimeout(function(){
 				game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken});
-    	}, 600); 
+    	}, 600);
 			game_server.startGame(lobby, {username:lobbyUser.place, place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: lobby.randomNumbers, playerPosition:lobby.slotsTaken});
 		}else{
 			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize});

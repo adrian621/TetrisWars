@@ -17,13 +17,13 @@ newLobbyList = function(){
 	}
 
 	for(var i = 0; i < lobbyNamesList.length; i++){
-addNewLobby(lobbyNamesList[i], lobbyIdsList[i], usersList[i], maxUsersList[i], passwordList[i]);
+		addNewLobby(lobbyNamesList[i], lobbyIdsList[i], usersList[i], maxUsersList[i], passwordList[i]);
 	}
 }
 
 join.on('NewLobbyInfo', function(data){
 	console.log('the id is sss: ' + data.id);
-addNewLobby(data.name, data.id, data.users, data.maxusers, data.hasPassword);
+	addNewLobby(data.name, data.id, data.users, data.maxusers, data.hasPassword);
 });
 
 join.on('UpdateLobbyInfo', function(data){
