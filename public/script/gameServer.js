@@ -104,9 +104,11 @@ update = function(lobby){
 	if (lobby.gameOvers.length >= lobby.boards.length-1){
 		endGame(lobby);
 	}
+	else{ //not game over
+		//TODO: get new randomnumbers for next game, get rank
+		game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards});
+	}
 
-	//TODO: get new randomnumbers for next game, get rank
-	game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards});
 }
 
 endGame = function(lobby){
