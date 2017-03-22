@@ -8,9 +8,6 @@ var blockSize = 10;
 //----- Public Functions -----//
 lobby_server.lobbyFunctions = function(socket, message, io){
 	switch(message.type){
-		//case "newLobby": newLobby(client, message); break;
-		//case "getLobbyList": getLobbyList(client); break;
-
 		case "gameSetup": gameSetup(io, socket, message);  break;
 		case "userIsReady": userIsReady(io, socket, message); break;
 		case "userIsNotReady": userIsNotReady(io, socket, message); break;
@@ -30,7 +27,6 @@ lobby_server.gameFunctions = function(socket, message, io){
 			var indexUser = lobby.lobbyUsers.indexOf(lobbyUser);
 			game_server.move(io, message, lobby, indexUser, socket);
 			break;
-		//case "update": game_server.boardIsUpdated(message, lobby, client); break;
 	}
 };
 
@@ -50,12 +46,12 @@ lobbyUser = function(id, index, authUser, place){
 	lobby.lobbyUsers[lobby.lobbyUsers.length] = lobbyUser;
 }
 
-lobby = function(id, randomNumbers, maxusers, name, password){
+lobby = function(id, maxusers, name, password){
 	var lobby = {
 		name: name,
 		id: id,
 		psw: password,
-		randomNumbers: randomNumbers,
+		randomNumbers: [],
 		lobbyUsers: [],
 		isActive: false,
 		maxUsers: maxusers,
@@ -63,7 +59,9 @@ lobby = function(id, randomNumbers, maxusers, name, password){
 		clients: [],
 		slotsTaken: [0, 0, 0, 0, 0],
 		gameOvers: [],
-		lastStateBoards: []
+		lastStateBoards: [],
+		distance: 150,
+		blockSize: 10
 	};
 	allLobbies[allLobbies.length] = lobby;
 }
@@ -75,8 +73,7 @@ lobby_server.createLobby = function(lobbyId, user, maxusers, name, password){
 }
 
 addNewLobby = function(lobbyId, maxusers, name, password){
-	var randomNumbers = generateRandomBlocks();
-	lobby(lobbyId, randomNumbers, maxusers, name, password);
+	lobby(lobbyId, [], maxusers, name, password);
 	genLobbyList.NewLobby(name, lobbyId, 1, maxusers, "no");
 }
 
@@ -111,6 +108,8 @@ addUserToLobby_new = function(authUser, lobbyId){
 
 	lobbyUser(lobby.lobbyUsers.length, lobbyIndex, authUser, place);
 	genLobbyList.updateLobby(lobbyId, lobby.lobbyUsers.length);
+
+	game_server.addBoardToLobby({place:place, username:place, distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken}, lobby.boards);
 }
 
 authUserInLobby= function(lobbyId, socket){
@@ -213,19 +212,28 @@ userIsReady = function(io, socket, data){
 	var lobbyId = getLobbyIdFromAuth(authUser);
   var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
 
-
 	if(!lobby.isActive){
 		var lobbyUser = getUserFromAuthUser(authUser, lobby);
 		lobbyUser.isReady = true;
 
 		if(allUsersInLobbyReady(lobby) && (lobby.lobbyUsers.length > 1)){
 			lobby.isActive = true;
-			game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, randomNumbers: lobby.randomNumbers});
-			game_server.startGame(lobby, {username:lobbyUser.place, place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: lobby.randomNumbers, playerPosition:lobby.slotsTaken});
+			var randomNum = generateRandomBlocks();
+			game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, randomNumbers: randomNum});
+			game_server.startGame(lobby, {username:lobbyUser.place, place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: randomNum, playerPosition:lobby.slotsTaken});
 		}else{
 			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize, boards:lobby.boards});
 		}
 	}
+}
+
+allUsersInLobbyReady = function(lobby){
+	for(var i = 0; i < lobby.lobbyUsers.length; i++){
+		if (lobby.lobbyUsers[i].isReady == false){
+			return false;
+		}
+	}
+	return true;
 }
 
 userIsNotReady = function(io, socket, data){
@@ -264,10 +272,9 @@ getUserFromId = function(id, indexLobby){
 	}
 }
 
-removeClients = function(lobbies){
-		for(var i = 0; i < lobbies.length; i ++){
-			lobbies[i].clients = [];
-	}
+getUsersFromLobby = function(id){
+	var index = getLobbyIndexFromId(id);
+	return allLobbies[index].lobbyUsers.length;
 }
 
 userLeavedLobby = function(io, socket, data){
@@ -286,12 +293,16 @@ userLeavedLobby = function(io, socket, data){
 	}
 }
 
-
-
 addUserToLobby = function(client, data){
 	var index = getLobbyIndexFromId(data.id);
 	lobbyUser(allLobbies[index].lobbyUsers.length, index);
 	allLobbies[index].clients.push(client);
+}
+
+removeClients = function(lobbies){
+		for(var i = 0; i < lobbies.length; i ++){
+			lobbies[i].clients = [];
+	}
 }
 
 removeUserFromLobby = function(lobby, lobbyUser){
@@ -300,30 +311,8 @@ removeUserFromLobby = function(lobby, lobbyUser){
 	genLobbyList.updateLobby(lobby.id, lobby.lobbyUsers.length);
 }
 
-getUsersFromLobby = function(id){
-	var index = getLobbyIndexFromId(id);
-	return allLobbies[index].lobbyUsers.length;
-}
-
-//----- Lobby Ready Functions -----//
-allUsersInLobbyReady = function(lobby){
-
-	for(var i = 0; i < lobby.lobbyUsers.length; i++){
-		if (lobby.lobbyUsers[i].isReady == false){
-			return false;
-		}
-	}
-
-	return true;
-}
-
 //----- Lobby Random Numbers Functions-----//
 getRandomNumbersFromLobby = function(id){
-	var index = getLobbyIndexFromId(id);
-	return allLobbies[index].randomNumbers;
-}
-
-getRandomNumbersFromLobby_new = function(id){
 	var index = getLobbyIndexFromId(id);
 	return allLobbies[index].randomNumbers;
 }
