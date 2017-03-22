@@ -93,7 +93,7 @@ lobby_server.ensureUserNotInLobby = function(user){
 			}
 		}
 	}
-	return true;		
+	return true;
 }
 
 
@@ -245,10 +245,10 @@ userIsReady = function(io, socket, data){
 			lobby.isActive = true;
 			setTimeout(function(){
 				game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken});
-    	}, 600);
+    	}, 0);
 			game_server.startGame(lobby, {username:lobbyUser.place, place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: lobby.randomNumbers, playerPosition:lobby.slotsTaken});
 		}else{
-			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize});
+			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize, boards:lobby.boards});
 		}
 	}
 }

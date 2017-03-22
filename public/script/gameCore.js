@@ -44,7 +44,6 @@
 				}
 			}
 		}
-		console.log(times);
 		return gameOversThisRound;
 	}
 
@@ -478,7 +477,7 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 	var board = {
 		x:x,
 		y:y,
-		bgColor:bgColor,
+		bgColor:'gainsboro', //bgColor
 		height:height,
 		width:width,
 		blockSize:blockSize,

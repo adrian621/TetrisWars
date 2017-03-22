@@ -13,6 +13,7 @@ var interval;
 var intervalMove;
 var canMove = true;
 var boardName;
+//var tetrisBackground = '../images/tetris_bg.jpg';
 
 //----- Draw Functions -----//
 drawBlock = function(block){
@@ -134,7 +135,7 @@ window.onload =function(){
 	}else{
 		lobbyNumber = 0;
 	}
-	drawPicture('../images/background2.png', 0, 0);
+	//drawPicture(tetrisBackground, 0, 0);
 	socket.emit('lobby', {type: "gameSetup"});
 }
 
@@ -166,7 +167,7 @@ window.onkeyup = function(e){
 //----- Socket Communication -----//
 socket.on('userLeavedLobby', function(data){
 	if(data.active == false){
-		drawPicture('../images/background2.png', 0, 0);
+		//drawPicture(tetrisBackground, 0, 0);
 		drawReadyButtonAll(data);
 		drawBlackBoardsAll(data);
 	}
@@ -201,9 +202,16 @@ socket.on('userIsNotReady', function(data){
 });
 
 socket.on('startGame', function(data){
-	drawPicture('../images/background2.png', 0, 0);
+	console.log("start game!");
 	drawBlackBoardsAll(data);
-	startGame(board.randomNumbers);
+	//startGame(board.randomNumbers);
+	gameCore.startGameBoard(board);
+	//updateCanvasBoard(board);
+	//updateCanvas(boards);
+	var x = 0;
+	var y = 100 + data.blockSize*20 + 15;
+
+	context.clearRect(x, y, 800, data.blockSize*10);
 });
 
 socket.on('move', function(data){
@@ -211,6 +219,8 @@ socket.on('move', function(data){
 });
 
 socket.on('update', function(data){
+	update();
+
 	for(i = 0; i < data.boards.length; i++){
 		if(data.boards[i].place != board.place){
 			updateCanvasBoard(data.boards[i]);
@@ -225,10 +235,11 @@ socket.on('invalidBoard', function(data){
 });
 
 socket.on('winner', function(data){
-	clearInterval(interval);
 	drawReadyButtonAll(data);
-	var x = boards[data.place].x - 10;
-	var y = boards[data.place].y - 45;
+	var x = data.boards[data.place].x - 10;
+	var y = data.boards[data.place].y - 45;
 	drawPicture('../images/winnerButton.png', x, y);
-	boards[data.winner].isActive = false;
+	data.boards[data.place].isActive = false;
+	data.boards[data.place].isReady = false;
+	drawReadyButtonAll(data);
 });
