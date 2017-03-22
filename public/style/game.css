@@ -11,6 +11,11 @@
 	padding-bottom: 10px;
 }
 
+#game{
+	background:url('../images/tetris_bg.jpg');
+  background-size: 100% 100%;
+}
+
 #between{
 	width: 280px;
 	float: left;
