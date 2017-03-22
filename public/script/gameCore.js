@@ -494,8 +494,6 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 		isReady: false,
 		place: place,
 		playerPosition: playerPosition,
-		lastStateAllBlocks: [],
-		lastStateCurrentBlocks: [],
 		time: 0
 	};
 	boards[boards.length] = board;

@@ -96,17 +96,6 @@ lobby_server.ensureUserNotInLobby = function(user){
 	return true;
 }
 
-
-
-lobby_server.validateId = function(lobbyId){
-	for(var i = 0; i < allLobbies.length; i++){
-		if(allLobbies[i].id == lobbyId){
-		return true;
-		}
-	}
-	return false;
-}
-
 addUserToLobby_new = function(authUser, lobbyId){
 	var lobbyIndex = getLobbyIndexFromId(lobbyId);
 	var lobby = allLobbies[lobbyIndex];
@@ -134,19 +123,6 @@ authUserInLobby= function(lobbyId, socket){
 	}
 	return false;
 }
-////////////////***********______________________________________!!
-
-removeClients = function(lobbies){
-		for(var i = 0; i < lobbies.length; i ++){
-			lobbies[i].clients = [];
-	}
-}
-
-getLobbyList = function(client){
-	var lobbyListNoClients = allLobbies;
-	removeClients(lobbyListNoClients);
-	client.emit('lobbyList',{lobbyList: lobbyListNoClients});
-}
 
 lobby_server.getLobbyList2 = function(){
 //	var allInfo = ;
@@ -167,8 +143,6 @@ lobby_server.getLobbyList2 = function(){
 	return {ids: ids, maxUsers:maxUsers, users: users, passwords:passwords, name:name};
 }
 
-
-//nytt
 getLobbyIdFromAuth = function(user){
 	for(var i = 0; i < allLobbies.length; i++){
 		for(var j = 0; j < allLobbies[i].lobbyUsers.length; j++){
@@ -178,33 +152,6 @@ getLobbyIdFromAuth = function(user){
 		}
 	}
 	return 0;
-}
-
-//nytt
-gameSetup = function(io, socket, data){
-	var authUser = socket.request.user;
-	var lobbyId = getLobbyIdFromAuth(authUser);
-	var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
-	var randomNumbers = getRandomNumbersFromLobby(lobbyId);
-	var users = getUsersFromLobby(lobbyId);
-	var username = authUser.username;
-	var lobbyUser = getUserFromUsername(authUser, lobby);
-
-	if(lobbyId == 0){
-		return;
-	}
-
-	lobby.clients.push(socket);
-	socket.emit('gameSetupR', {distance: distance, blockSize: blockSize, randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place, playerPosition:lobby.slotsTaken});
-	game_server.broadcastToLobby(lobby, socket, {type: 'newPlayer', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, users: users, randomNumbers: randomNumbers, username: username, place: lobbyUser.place});
-}
-
-getUserFromUsername = function(authUser, lobby){
-		for(var j = 0; j < lobby.lobbyUsers.length; j++){
-			if(authUser.id === (lobby.lobbyUsers[j].authUser.id)){
-				return lobby.lobbyUsers[j];
-			}
-		}
 }
 
 getLobbyIndexFromId = function(id){
@@ -230,7 +177,37 @@ removeLobby = function(lobby){
 	allLobbies.splice(indexLobby, 1);
 }
 
+
+// ----- Game Functions -----//
+gameSetup = function(io, socket, data){
+	var authUser = socket.request.user;
+	var lobbyId = getLobbyIdFromAuth(authUser);
+	var lobby = allLobbies[getLobbyIndexFromId(lobbyId)];
+	var randomNumbers = getRandomNumbersFromLobby(lobbyId);
+	var users = getUsersFromLobby(lobbyId);
+	var username = authUser.username;
+	var lobbyUser = getUserFromUsername(authUser, lobby);
+
+	if(lobbyId == 0){
+		return;
+	}
+
+	lobby.clients.push(socket);
+	socket.emit('gameSetupR', {distance: distance, blockSize: blockSize, randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place, playerPosition:lobby.slotsTaken});
+	game_server.broadcastToLobby(lobby, socket, {type: 'newPlayer', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, users: users, randomNumbers: randomNumbers, username: username, place: lobbyUser.place});
+}
+
+
 //----- Lobby User Functions -----//
+lobby_server.validateId = function(lobbyId){
+	for(var i = 0; i < allLobbies.length; i++){
+		if(allLobbies[i].id == lobbyId){
+		return true;
+		}
+	}
+	return false;
+}
+
 userIsReady = function(io, socket, data){
 	var authUser = socket.request.user;
 	var lobbyId = getLobbyIdFromAuth(authUser);
@@ -243,20 +220,10 @@ userIsReady = function(io, socket, data){
 
 		if(allUsersInLobbyReady(lobby) && (lobby.lobbyUsers.length > 1)){
 			lobby.isActive = true;
-			setTimeout(function(){
-				game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken});
-    	}, 0);
+			game_server.emitToLobby(lobby, {type: 'startGame', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, randomNumbers: lobby.randomNumbers});
 			game_server.startGame(lobby, {username:lobbyUser.place, place:lobbyUser.place, distance: distance, blockSize: blockSize, randomNumbers: lobby.randomNumbers, playerPosition:lobby.slotsTaken});
 		}else{
 			game_server.emitToLobby(lobby, {type: 'userIsReady', place:lobbyUser.place, distance:distance, blockSize:blockSize, boards:lobby.boards});
-		}
-	}
-}
-
-getUserFromAuthUser = function(user, lobby){
-	for(var j = 0; j < lobby.lobbyUsers.length; j++){
-		if(user.id === (lobby.lobbyUsers[j].authUser.id)){
-			return lobby.lobbyUsers[j];
 		}
 	}
 }
@@ -270,6 +237,36 @@ userIsNotReady = function(io, socket, data){
 		lobbyUser.isReady = false;
 
 		game_server.emitToLobby(lobby, {type: 'userIsNotReady', place:lobbyUser.place, distance:distance, blockSize:blockSize});
+	}
+}
+
+getUserFromUsername = function(authUser, lobby){
+		for(var j = 0; j < lobby.lobbyUsers.length; j++){
+			if(authUser.id === (lobby.lobbyUsers[j].authUser.id)){
+				return lobby.lobbyUsers[j];
+			}
+		}
+}
+
+getUserFromAuthUser = function(user, lobby){
+	for(var j = 0; j < lobby.lobbyUsers.length; j++){
+		if(user.id === (lobby.lobbyUsers[j].authUser.id)){
+			return lobby.lobbyUsers[j];
+		}
+	}
+}
+
+getUserFromId = function(id, indexLobby){
+	for(var i = 0; i < allLobbies[indexLobby].lobbyUsers.length; i++){
+		if(allLobbies[indexLobby].lobbyUsers[i].id == id-1){
+			return i;
+		}
+	}
+}
+
+removeClients = function(lobbies){
+		for(var i = 0; i < lobbies.length; i ++){
+			lobbies[i].clients = [];
 	}
 }
 
@@ -289,13 +286,7 @@ userLeavedLobby = function(io, socket, data){
 	}
 }
 
-getUserFromId = function(id, indexLobby){
-	for(var i = 0; i < allLobbies[indexLobby].lobbyUsers.length; i++){
-		if(allLobbies[indexLobby].lobbyUsers[i].id == id-1){
-			return i;
-		}
-	}
-}
+
 
 addUserToLobby = function(client, data){
 	var index = getLobbyIndexFromId(data.id);
