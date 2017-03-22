@@ -6,8 +6,8 @@ var intervals = [];
 
   exports.validate = function(data, type){
     switch(type){
-    case 'lobby': console.log('returning true'); return validateLobby(data);
-    case 'game': console.log('returning true'); return validateGame(data); //add validation
+    case 'lobby': /*console.log('returning true');*/ return validateLobby(data);
+    case 'game': /*console.log('returning true');*/ return validateGame(data); //add validation
     default: return false;
     }
   }
@@ -32,7 +32,7 @@ var intervals = [];
     }
   }
   validateMove = function(data){
-    console.log(data.move);
+    //console.log(data.move);
     var move = data.move;
     var validMoves = [32, 37, 38, 39, 40];
     //console.log('validateBoard: ' + validateBoard(data.boards));

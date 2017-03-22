@@ -204,17 +204,21 @@ socket.on('userIsNotReady', function(data){
 socket.on('startGame', function(data){
 	console.log("start game!");
 	board.allBlocks = [];
+	board.currentBlocks = [];
 	board.randomNumbers = data.randomNumbers;
 	board.randomNumbersCounter = 0;
 	board.playerPosition = data.playerPosition;
-	drawBlackBoardsAll(data);
+	board.time = 0;
+
 	gameCore.startGameBoard(board);
 	//updateCanvasBoard(board);
 	//updateCanvas(boards);
 	var x = 0;
 	var y = 100 + data.blockSize*20 + 15;
 
+	drawBlackBoardsAll(data);
 	context.clearRect(x, y, 800, data.blockSize*10);
+	context.clearRect(0, 0, 800, 100);
 });
 
 socket.on('move', function(data){
@@ -232,7 +236,6 @@ socket.on('update', function(data){
 });
 
 socket.on('invalidBoard', function(data){
-	//console.log("invalid board correction");
 	board = data.board;
 	updateCanvasBoard(data.board);
 });
@@ -242,8 +245,6 @@ socket.on('winner', function(data){
 	var x = data.boards[data.place].x - 10;
 	var y = data.boards[data.place].y - 45;
 	drawPicture('../images/winnerButton.png', x, y);
-	data.boards[data.place].isActive = false;
-	data.boards[data.place].isReady = false;
-	drawReadyButtonAll(data);
-	socket.emit('lobby', {type: "resetGame"});
+	board.isActive = false;
+	board.isReady = false;
 });
