@@ -76,15 +76,7 @@ router.post('/register', function(req, res){
                 newUser.email = email;
                 newUser.username = username;
                 newUser.password = password;
-                /*
-                var newUser = new User({
-                  local.name: name,
-                  local.email: email,
-                  local.username: username,
-                  local.password: password
-                });
-                */
-
+                newUser.rank = 0;
                 User.createUser(newUser, (err, user) => {
                   if(err) throw err;
                   console.log(err);

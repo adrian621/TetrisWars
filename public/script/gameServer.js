@@ -1,6 +1,6 @@
 var game_server = module.exports = {};
 var game_core = require('./gameCore');
-
+var ranking = require('./ranking');
 //TODO: need several intervals
 var interval;
 
@@ -128,7 +128,7 @@ endGame = function(lobby){
 			var place = lobby.boards[i].place;
 		}
 	}
-
+  ranking.updateRank(lobby.lobbyUsers, winner);
 	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards});
 }
 

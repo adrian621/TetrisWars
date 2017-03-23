@@ -17,7 +17,10 @@ var UserSchema = mongoose.Schema({
   },
   name: {
     type: String
-}
+},
+  rank: {
+    type: Number
+  }
 });
 
 /*
