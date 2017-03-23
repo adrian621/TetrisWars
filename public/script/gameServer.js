@@ -34,6 +34,10 @@ game_server.broadcastToLobby = function(lobby, socket, data){
 	}
 }
 
+game_server.addBoardToLobby  = function(data, list){
+	game_core.addBoard(data, list);
+};
+
 blockListEqual = function(blocks_1, blocks_2){
 	if(blocks_1.length != blocks_2.length){
 		return false;
@@ -108,36 +112,50 @@ update = function(lobby){
 		//TODO: get new randomnumbers for next game, get rank
 		game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards});
 	}
-
 }
 
 endGame = function(lobby){
 	console.log("Winner!!!");
 	clearInterval(interval);
 	lobby.isActive = false;
+	lobby.gameOvers = [];
 
 	for(i=0; i < lobby.lobbyUsers.length; i++){
 		lobby.lobbyUsers[i].isReady = false;
 	}
 
 	var winner = "";
+	var place = 0;
 	//TODO: if both last users lost on same intervall
 	for(var i = 0; i < lobby.boards.length; i++){
 		if(lobby.boards[i].isActive){
-			var winner = lobby.boards[i].username;
-			var place = lobby.boards[i].place;
+			winner = lobby.boards[i].username;
+			place = lobby.boards[i].place;
 		}
+    /* Reset game */
+		lobby.boards[i].allBlocks = [];
+		lobby.boards[i].currentBlocks = [];
+		lobby.boards[i].randomNumbersCounter = 0;
+		lobby.boards[i].isActive = false;
+		lobby.boards[i].time = 0;
 	}
   ranking.updateRank(lobby.lobbyUsers, winner);
-	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards});
+
+		
+	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards, distance:lobby.distance, blockSize:lobby.blockSize});
 }
 
 game_server.startGame = function(lobby, data){
-	lobby.boards = [];
-	game_core.addBoards(data, lobby.boards);
+	/*lobby.boards = [];
+	game_core.addBoards(data, lobby.boards);*/
+
+	lobby.boards.forEach(function(board) {
+		console.log(data.place);
+	  board.randomNumbers = data.randomNumbers;
+	});
+
 	game_core.startGame(lobby.boards);
 	interval = setInterval(function(){update(lobby);}, 1000);
-
 }
 
 getBoardFromPlace = function(lobby, place){
