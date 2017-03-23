@@ -1,6 +1,6 @@
 var game_server = module.exports = {};
 var game_core = require('./gameCore');
-
+var ranking = require('./ranking');
 //TODO: need several intervals
 var interval;
 
@@ -132,14 +132,16 @@ endGame = function(lobby){
 			winner = lobby.boards[i].username;
 			place = lobby.boards[i].place;
 		}
-
-		/* Reset game */
+    /* Reset game */
 		lobby.boards[i].allBlocks = [];
 		lobby.boards[i].currentBlocks = [];
 		lobby.boards[i].randomNumbersCounter = 0;
 		lobby.boards[i].isActive = false;
 		lobby.boards[i].time = 0;
 	}
+  ranking.updateRank(lobby.lobbyUsers, winner);
+
+		
 	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards, distance:lobby.distance, blockSize:lobby.blockSize});
 }
 
