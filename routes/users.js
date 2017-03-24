@@ -32,11 +32,15 @@ router.get('/auth/facebook/callback',
 });
 
 router.get('/toplist', function(req, res){
-//  User.getToplist(function(){
-
-
-    res.render('toplist');
-  //});
+  User.getToplist(function(err, toplist){
+    var usernames = [];
+    var score = [];
+    for(var i = 0; i < toplist.length; i++){
+      usernames[i] = toplist[i].username;
+      score[i] = toplist[i].rank;
+    }
+    res.render('toplist', {usernames, usernames, score: score});
+  });
 });
 
 
@@ -53,9 +57,9 @@ router.post('/register', function(req, res){
 
     req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('email', 'Email is invalid').isEmail();
-    req.checkBody('username', 'username is required').notEmpty();
-    req.checkBody('password', 'password is required').notEmpty();
-    req.checkBody('password2', 'passwords do not match').equals(req.body.password);
+    req.checkBody('username', 'Username is required').notEmpty();
+    req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
 
     var errors = req.validationErrors();

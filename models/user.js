@@ -85,7 +85,7 @@ bcrypt.compare(candidatePassword, hash, function(err, res){
 }
 
 module.exports.getToplist = function(callback){
-  var query = {$max: rank}
-  //User.findOne({$query:{},$orderby:{rank:-1}})
+  User.find({
+  }).limit(10).sort({rank: -1}).select('username rank').exec(callback);
 
 }
