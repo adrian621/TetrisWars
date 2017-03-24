@@ -31,6 +31,14 @@ router.get('/auth/facebook/callback',
     res.redirect('/');
 });
 
+router.get('/toplist', function(req, res){
+//  User.getToplist(function(){
+
+
+    res.render('toplist');
+  //});
+});
+
 
 router.post('/register', function(req, res){
     var name = req.body.name;

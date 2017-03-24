@@ -1,3 +1,5 @@
+
+
 //----- Public Functions -----//
 (function(exports){
 
@@ -25,7 +27,7 @@
 	};*/
 
 	exports.addBoard = function(data, list){
-		Board((data.distance*(data.place+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, data.place, data.playerPosition);
+		Board((data.distance*(data.place+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, data.place, data.playerPosition, data.id);
 	};
 
 	exports.moveBlocksExport = function(keycode, board){
@@ -473,7 +475,7 @@ moveBlocks = function(keycode, board){
 
 //---------- Generall Things ----------//
 //----- Structs -----//
-Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers, boards, place, playerPosition){
+Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers, boards, place, playerPosition, id){
 	var board = {
 		x:x,
 		y:y,
@@ -494,7 +496,8 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 		isReady: false,
 		place: place,
 		playerPosition: playerPosition,
-		time: 0
+		time: 0,
+		id: id
 	};
 	boards[boards.length] = board;
 }
