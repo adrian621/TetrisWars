@@ -1,8 +1,4 @@
 TODO
-1. Passport för flera grupper.
-2. Skapa lobby med generarat ID.
-3. Lägg till lobbyId i passport
-4. Skydd mot SQL injection ???? Finns det?
 5. "glömt lösenord?"
 6. Lägga till Goggle+ och twitter-login?
 
@@ -19,3 +15,4 @@ Frontend
 Båda:
 -isActivelistan hos gameClient ska vara hos server
 man har endast sitt eget board
+Ladda upp bild
