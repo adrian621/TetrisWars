@@ -14,7 +14,9 @@ router.get('/login', Authfunc.ensureNotauth, function(req, res){
   res.render('login');
 });
 router.get('/account', Authfunc.ensureauth, function(req, res){
-  res.render('account');
+  User.getUserById(req.user.id, function(err, user){
+    res.render('account', {username: user.username, email: user.email, rank: user.rank});
+  }); 
 });
 router.get('/logout', Authfunc.ensureauth, function(req, res){
   req.logout();
