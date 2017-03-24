@@ -1,0 +1,56 @@
+#nav_bar{
+	position: fixed;
+	width: 100%;
+	top: 0px;
+	background-color: Gainsboro;
+	text-align: center;
+	-moz-box-shadow: 0 0 5px #888888;
+	-webkit-box-shadow: 0 0 5px #888888;
+	box-shadow: 0 0 5px #888888;
+	font-family: Arimo;
+	font-weight: bold;
+}
+
+.center{
+    display: inline-block;
+    list-style-type: none;
+}
+
+.border_left{
+    border-left: 1px solid silver;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    height: 55px;
+    overflow: hidden;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: #372f2f;
+    text-align: center;
+    width: 120px;
+    height: 100%;
+    padding: 17px;
+    font-size: 120%;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #F0F0F0;
+    color: #372f2f;
+    text-decoration: none;
+}
+
+.logo{
+	padding-top:17px;
+	padding-bottom:16px;
+	padding-right: 5px;
+}

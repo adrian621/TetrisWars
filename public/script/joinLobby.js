@@ -70,7 +70,6 @@ addNewLobby = function(nameParam, idParam, usersParam, maxParam, hasPasswordPara
 	psw.innerHTML = hasPasswordParam;
 	joinbutton.createTextNode = "Join";
 	joinbutton.setAttribute('type', 'button');
-	joinbutton.className = "btn btn-primary";
 	tr.id = idParam;
 
 	tr.appendChild(lobbyName);
