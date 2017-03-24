@@ -125,12 +125,18 @@ endGame = function(lobby){
 	}
 
 	var winner = "";
+	var losers = [];
 	var place = 0;
 	//TODO: if both last users lost on same intervall
 	for(var i = 0; i < lobby.boards.length; i++){
 		if(lobby.boards[i].isActive){
-			winner = lobby.boards[i].username;
+			winner = lobby.boards[i].player;
+			winnerId = lobby.boards[i].id;
 			place = lobby.boards[i].place;
+		}
+		else{
+			losers.push(lobby.boards[i].id);
+
 		}
     /* Reset game */
 		lobby.boards[i].allBlocks = [];
@@ -139,9 +145,9 @@ endGame = function(lobby){
 		lobby.boards[i].isActive = false;
 		lobby.boards[i].time = 0;
 	}
-  ranking.updateRank(lobby.lobbyUsers, winner);
+  ranking.updateRank(losers, winnerId);
 
-		
+
 	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards, distance:lobby.distance, blockSize:lobby.blockSize});
 }
 

@@ -83,3 +83,9 @@ bcrypt.compare(candidatePassword, hash, function(err, res){
   callback(null, res);
 });
 }
+
+module.exports.getToplist = function(callback){
+  var query = {$max: rank}
+  //User.findOne({$query:{},$orderby:{rank:-1}})
+
+}

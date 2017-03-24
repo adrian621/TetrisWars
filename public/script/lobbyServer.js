@@ -106,10 +106,11 @@ addUserToLobby_new = function(authUser, lobbyId){
 		}
 	}
 
+
 	lobbyUser(lobby.lobbyUsers.length, lobbyIndex, authUser, place);
 	genLobbyList.updateLobby(lobbyId, lobby.lobbyUsers.length);
 
-	game_server.addBoardToLobby({place:place, username:place, distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken}, lobby.boards);
+	game_server.addBoardToLobby({place:place, id: authUser.id, username: authUser.username , distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken}, lobby.boards);
 }
 
 authUserInLobby= function(lobbyId, socket){
