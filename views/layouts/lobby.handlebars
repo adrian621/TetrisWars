@@ -9,11 +9,11 @@
   <table class="table" id = "tableId">
     <thead>
       <tr>
-        <th>Lobbyname</th>
-        <th>Users in Lobby</th>
-        <th>Max Users</th>
-        <th>Need Password</th>
-        <th></th>
+        <th class="table_header">Lobbyname</th>
+        <th class="table_header">Users in Lobby</th>
+        <th class="table_header">Max Users</th>
+        <th class="table_header">Need Password</th>
+        <th class="table_header"></th>
       </tr>
     </thead>
 
@@ -36,6 +36,5 @@ var lobbyUsers = "{{ lobbyUsers }}";
 <script src = "/script/joinLobby.js"></script>
 
 <div id = "createLobby">
-  <!-- <input type = "button" value = "Create new lobby" id = "NewLobbyButton"> </input> -->
-  <a href = "createLobby"><button type="button" class="btn btn-primary" id = "NewLobbyButton">Create lobby</button></a>
+  <a href = "createLobby"><button type="button" id="NewLobbyButton">Create lobby</button></a>
 </div>

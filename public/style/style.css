@@ -5,8 +5,13 @@
 }
 
 body{
-	background-color: whitesmoke;
+	background-color: #f1f1f3;
 	font-family: Helvetica, Arial, sans-serif;
+	background-image: url(../images/background_fade.png);
+	background-repeat: no-repeat;
+	background-size: 1500px 600px;
+  background-position: center top;
+	color: black;
 }
 
 h1{
@@ -26,8 +31,9 @@ th{
 	width: 900px;
 	margin-left: auto;
 	margin-right: auto;
-	background-color: white;
-	clear:both;
+	clear: both;
+	margin-top: 130px;
+	margin-bottom: 20px;
 }
 
 #header {
@@ -44,21 +50,12 @@ th{
 	margin: 0px;
 }
 
-
-.content{
-	color: black;
-	padding: 10px;
-	clear: both;
-	margin-top: 5px;
-	margin-bottom: 20px;
-}
-
 .customBox{
-	background-color: silver;
+	background-color: whitesmoke;
 	padding: 20px 20px 0px 20px;
 	margin-bottom: 10px;
 	color: white;
-    box-shadow: 5px 5px 5px #999999;
+  box-shadow: 5px 5px 5px #999999;
 }
 
 #container2{
@@ -68,6 +65,18 @@ th{
 
 #container2 a{
 	margin: 0 2px;
+}
+
+button{
+	background-color: crimson;
+	color: white;
+	box-shadow: 2px 2px 5px #888888;
+	border-radius: 6px;
+	padding: 7px 17px;
+}
+
+button:hover{
+  background-color: LightGreen;
 }
 
 footer{

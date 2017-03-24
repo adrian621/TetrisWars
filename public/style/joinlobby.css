@@ -1,5 +1,7 @@
 ul#allLobbysList{
 	list-style-type: none;
+	padding: 0px;
+	height: auto;
 }
 
 .navbar-default .navbar-brand {
@@ -15,5 +17,11 @@ ul#allLobbysList{
 #createLobby{
 	clear:both;
 	text-align: left;
-	margin-top: 15px; 
+	margin-top: 15px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+#table_header{
+	border-bottom: 3px solid black;
 }

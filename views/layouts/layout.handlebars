@@ -2,61 +2,53 @@
 	<head>
 		<title>Tetris Wars</title>
 		<script src="/socket.io/socket.io.js"></script>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.
-		com/bootstrap/3.3.6/css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="/style/style.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel = "stylesheet" href = "/style/joinlobby.css"/>
 		<link rel = "stylesheet" href = "/style/login.css"/>
 		<link rel = "stylesheet" href = "/style/game.css"/>
-
+		<link rel = "stylesheet" href = "/style/nav.css"/>
+		<link rel="stylesheet" type="text/css" href="/style/style.css" />
 	</head>
 
 	<body>
 		<div id="container">
-			<div id="header">
-				<br/>
-				<h1>Tetris Wars</h1>
-				<br/>
-			</div>
-			<nav class = "navbar navbar-inverse">
-				<div class = "container-fluid">
-					<ul class = "nav navbar-nav">
-						<li><a href = "/">Home</a></li>
-						<li><a href = "lobby">Play</a></li>
-						<li> <a href = "account">Account</a></li>
-						<li> <a href = "toplist">toplist</a></li>
-					</ul>
-					<ul class = "nav navbar-nav navbar-right">
-
-						{{#if success_msg}}
-						  <div class="alert alert-success">{{success_msg}}</div>
-						{{/if}}
-						{{#if error_msg}}
-						  <div class="alert alert-danger">{{error_msg}}</div>
-						{{/if}}
-						{{#if error}}
-						  <div class="alert alert-danger">{{error}}</div>
-						{{/if}}
-
-						{{#if user}}
-
-						<li><a href = "logout"><span class = "glyphicon glyphicon-log-out"></span> LogOut </a></li>
-
-						{{else}}
-							<li><a href = "register"><span class = "glyphicon glyphicon-user"></span> Sign Up </a></li>
-						<li><a href = "login"><span class = "glyphicon glyphicon-log-in"></span> Login </a></li>
-						{{/if}}
-					</ul>
-				</div>
-			</nav>
-
-			<div class="content">
 				{{{body}}}
-			</div>
-
-			<footer>
-			  By Jessica & Adrian
-			</footer>
 		</div>
+
+		<!-- Navigation bar -->
+		<div id="nav">
+			<div id="nav_bar">
+				<ul class="center">
+					<li><a href="/">TetrisWars</a></li>
+					<li><a href="lobby" class="border_left">Play</a></li>
+					<li><a href="toplist" class="border_left">Toplist</a></li>
+					<li><a href="account" class="border_left">Account</a></li>
+
+					{{#if success_msg}}
+						<div class="alert alert-success">{{success_msg}}</div>
+					{{/if}}
+					{{#if error_msg}}
+						<div class="alert alert-danger">{{error_msg}}</div>
+					{{/if}}
+					{{#if error}}
+						<div class="alert alert-danger">{{error}}</div>
+					{{/if}}
+
+					{{#if user}}
+					<li><a href = "logout"><span class = "glyphicon glyphicon-log-out"></span> LogOut </a></li>
+					{{else}}
+						<li><a href = "register"><span class = "glyphicon glyphicon-user"></span> Sign Up </a></li>
+						<li><a href = "login"><span class = "glyphicon glyphicon-log-in"></span> Login </a></li>
+					{{/if}}
+
+				</ul>
+			</div>
+		</div>
+
+		<footer>
+			By Jessica & Adrian
+		</footer>
 	</body>
 </html>
