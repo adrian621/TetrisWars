@@ -1,6 +1,8 @@
 TODO
 5. "glömt lösenord?"
 6. Lägga till Goggle+ och twitter-login?
+7. lägg till namn i account
+8. Änvändarnamn får ej ha fula ord i sig (typ dickfuck)
 
 
 Frontend
@@ -11,6 +13,9 @@ Frontend
 -"glömt lösenord?"
 -Sök efter lobby
 -Visa sidor av lobbies ?
+-Se namn istället för "account"
+-footer
+-sätta intervall för rank som får joina när man skapar lobby
 
 Båda:
 -isActivelistan hos gameClient ska vara hos server

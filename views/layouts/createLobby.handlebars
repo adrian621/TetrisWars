@@ -1,8 +1,35 @@
 <h2>Create Lobby </h2>
 </br>
-<div class="customBox">
-	Lobbyname, maxusers, password
-</div>
-<form method="post" action = "/createLobby">
-	<button type="submit" class="btn btn-primary" id="NewLobbyButton">Create lobby</button>
+
+<form method="post" action="/createLobby">
+  <div class = "form-group">
+    <label>Name of the Lobby</label>
+    <input type="text" class ="form-control" name = "lobbyname">
+  </div>
+  <div class = "form-group">
+    <label>Maximun amount of Players</label>
+    <!--input type="text" class ="form-control" name ="maxusers"-->
+		<div id="maxusers">
+			<div class="maxusers_option margin_right">
+        <input type="radio" name="maxusers" value="2" checked>2
+			</div>
+			<div class="maxusers_option margin_right">
+        <input type="radio" name="maxusers" value="3">3
+			</div>
+			<div class="maxusers_option margin_right">
+        <input type="radio" name="maxusers" value="4">4
+			</div>
+			   <div class="maxusers_option margin_right">
+      <input type="radio" name="maxusers" value="5">5
+			</div>
+			<div class="maxusers_option">
+        <input type="radio" name="maxusers" value="6">6
+			</div>
+		</div>
+  </div>
+  <div class = "form-group">
+    <label>Password?</label>
+    <input type="text" class ="form-control" placeholder="Optional" name ="password">
+  </div>
+	<button type="submit" id="NewLobbyButton">Create lobby</button>
 </form>

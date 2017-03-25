@@ -1,6 +1,25 @@
+<h2>Account</h2>
+<p class="account_text_header">Username</p>
+<p class="account_text_info" id="username"></p>
+
+<p class="account_text_header">Score</p>
+<p class="account_text_info" id="score"></p>
+
+<p class="account_text_header">Name</p>
+<p class="account_text_info" id="name"></p>
+
+<p class="account_text_header">Email</p>
+<p class="account_text_info" id="email"></p>
+
+
+
 <script>
-var username = "{{ username }}";
-var email = "{{ email }}";
-var score = "{{ rank }}";
-document.write("Username: " + username + " email: " +email+ " score: " +score );
+  var username = "{{ username }}";
+  var score = "{{ rank }}";
+  var email = "{{ email }}";
+
+  document.getElementById("username").innerHTML = username;
+  document.getElementById("score").innerHTML = score;
+  document.getElementById("name").innerHTML = username;
+  document.getElementById("email").innerHTML = email;
 </script>

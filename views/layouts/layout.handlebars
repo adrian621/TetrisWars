@@ -9,7 +9,9 @@
 		<link rel = "stylesheet" href = "/style/login.css"/>
 		<link rel = "stylesheet" href = "/style/game.css"/>
 		<link rel = "stylesheet" href = "/style/nav.css"/>
-		<link rel="stylesheet" type="text/css" href="/style/style.css" />
+		<link rel = "stylesheet" href = "/style/style.css" />
+		<link rel = "stylesheet" href = "/style/account.css" />
+		<link rel = "stylesheet" href = "/style/createLobby.css" />
 	</head>
 
 	<body>
@@ -24,7 +26,6 @@
 					<li><a href="/">TetrisWars</a></li>
 					<li><a href="lobby" class="border_left">Play</a></li>
 					<li><a href="toplist" class="border_left">Toplist</a></li>
-					<li><a href="account" class="border_left">Account</a></li>
 
 					{{#if success_msg}}
 						<div class="alert alert-success">{{success_msg}}</div>
@@ -37,7 +38,8 @@
 					{{/if}}
 
 					{{#if user}}
-					<li><a href = "logout"><span class = "glyphicon glyphicon-log-out"></span> LogOut </a></li>
+						<li><a href="account" class="border_left">Account</a></li>
+						<li><a href = "logout"><span class="glyphicon glyphicon-log-out"></span> LogOut </a></li>
 					{{else}}
 						<li><a href = "register"><span class = "glyphicon glyphicon-user"></span> Sign Up </a></li>
 						<li><a href = "login"><span class = "glyphicon glyphicon-log-in"></span> Login </a></li>
@@ -47,8 +49,8 @@
 			</div>
 		</div>
 
-		<footer>
-			By Jessica & Adrian
-		</footer>
+		<div class="footer">
+			<p id="footer_text">&copy Jessica Hillert and Adrian Tyrevall</p>
+		</div>
 	</body>
 </html>

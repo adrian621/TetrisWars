@@ -48,7 +48,7 @@ lobbyUser = function(id, index, authUser, place){
 
 lobby = function(id, maxusers, name, password){
 	var lobby = {
-		name: name,
+		name: name.repeat(1),
 		id: id,
 		psw: password,
 		randomNumbers: [],
@@ -68,12 +68,13 @@ lobby = function(id, maxusers, name, password){
 
 //----- Lobby Functions -----//
 lobby_server.createLobby = function(lobbyId, user, maxusers, name, password){
+	console.log([name, maxusers])
 	addNewLobby(lobbyId, maxusers, name, password);
 	addUserToLobby_new(user, lobbyId);
 }
 
 addNewLobby = function(lobbyId, maxusers, name, password){
-	lobby(lobbyId, [], maxusers, name, password);
+	lobby(lobbyId, maxusers, name, password);
 	genLobbyList.NewLobby(name, lobbyId, 1, maxusers, "no");
 }
 
@@ -193,7 +194,8 @@ gameSetup = function(io, socket, data){
 	}
 
 	lobby.clients.push(socket);
-	socket.emit('gameSetupR', {distance: distance, blockSize: blockSize, randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place, playerPosition:lobby.slotsTaken});
+	console.log([lobby.name, lobby.maxUsers]);
+	socket.emit('gameSetupR', {distance: distance, blockSize: blockSize, randomNumbers: randomNumbers, users: users, username: username, place: lobbyUser.place, playerPosition:lobby.slotsTaken, lobbyname:lobby.name, maxplayers:lobby.maxUsers});
 	game_server.broadcastToLobby(lobby, socket, {type: 'newPlayer', distance: distance, blockSize: blockSize, playerPosition:lobby.slotsTaken, users: users, randomNumbers: randomNumbers, username: username, place: lobbyUser.place});
 }
 

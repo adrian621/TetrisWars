@@ -3,8 +3,8 @@
 	padding-top: 27px;
 }
 
-#canvas{
-	width: 200 px;
+#canvas_div{
+	width: 100%;;
 	align: center;
 	text-align: center;
 	padding-top: 42px;
@@ -12,32 +12,33 @@
 }
 
 #game{
-	background:url('../images/tetris_bg.jpg'); 
+	background:url('../images/tetris_bg.jpg');
+	width: 100%;
+	height: 500px;
   background-size: 100% 100%;
-}
-
-#between{
-	width: 280px;
-	float: left;
-	text-align: center;
-}
-#player2{
-	width: 200 px;
-	float: right;
-	text-align: center;
-}
-
-#playOriginal{
-	width: 200 px;
-	float: left;
-	text-align: center;
-	padding: 0px 0px 10px 0px;
+	display:block;
+	border:1px solid #000000;
 }
 
 #gameHeader{
-	margin-right: 10px;
+	height: 40px;
 }
 
-#lobbyname{
+#lobbyname_text{
+	padding: 0px;
+	margin: 0px;
+	width:80%;
+	height: 100%;
 	float:left;
+}
+
+#maxplayers_text{
+	margin: 0px;
+	float: right;
+	height: 100%;
+	width:15%;
+	text-align: right;
+	font-size: 120%;
+	padding: 0px;
+	padding-top:7px;
 }

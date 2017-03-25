@@ -1,17 +1,16 @@
 <h2>Lobbies</h2>
+</br>
 {{!-- Här skicks lobbyId för specifik lobby till server. Skriv om så att rätt lobbyId skickas --}}
 <form id = "joinForm" method = "post" action="/joinLobby">
    <input type = "hidden" id = "join" name = "lobbyId" value=""></input>
 </form>
 
-<br/>
-<div class="customBox">
-  <table class="table" id = "tableId">
+<table class="table" id = "tableId">
     <thead>
       <tr>
         <th class="table_header">Lobbyname</th>
         <th class="table_header">Users in Lobby</th>
-        <th class="table_header">Max Users</th>
+        <th class="table_header">Maximum Players</th>
         <th class="table_header">Need Password</th>
         <th class="table_header"></th>
       </tr>
@@ -22,16 +21,13 @@
 
   </table>
   <ul id = "allLobbysList"></ul>
-</div>
 
 <script>
-var lobbyNames =  "{{ lobbyNames }}";
-var lobbyIds =  "{{ lobbyIds }}";
-var lobbyMaxUsers = "{{ lobbyMaxUsers }}";
-var lobbyPassword = "{{ lobbyPassword }}";
-var lobbyUsers = "{{ lobbyUsers }}";
-
-
+  var lobbyNames =  "{{ lobbyNames }}";
+  var lobbyIds =  "{{ lobbyIds }}";
+  var lobbyMaxUsers = "{{ lobbyMaxUsers }}";
+  var lobbyPassword = "{{ lobbyPassword }}";
+  var lobbyUsers = "{{ lobbyUsers }}";
 </script>
 <script src = "/script/joinLobby.js"></script>
 
