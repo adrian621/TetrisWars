@@ -130,12 +130,6 @@ addButtonEvent = function(){
 }
 
 window.onload =function(){
-	if(lobbyId){
-	lobbyNumber = lobbyId;
-	}else{
-		lobbyNumber = 0;
-	}
-	//drawPicture(tetrisBackground, 0, 0);
 	socket.emit('lobby', {type: "gameSetup"});
 }
 
@@ -181,6 +175,9 @@ socket.on('gameSetupR', function(data){
 	drawReadyButtonAll(data);
 	drawBlackBoardsAll(data);
 	addButtonEvent();
+
+	document.getElementById("lobbyname_text").innerHTML = data.lobbyname;
+	document.getElementById("maxplayers_text").innerHTML = "Maxplayers: "+data.maxplayers.toString();
 });
 
 socket.on('newPlayer', function(data){

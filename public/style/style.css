@@ -1,30 +1,43 @@
-* {
+*{
 	margin: 0px;
 	padding: 0px;
-	font-family: AR CENA;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	box-sizing: inherit;
+}
+
+html{
+  min-height: 100%;
+	position: relative;
+  margin:0;
+  padding:0;
 }
 
 body{
 	background-color: #f1f1f3;
-	font-family: Helvetica, Arial, sans-serif;
 	background-image: url(../images/background_fade.png);
 	background-repeat: no-repeat;
 	background-size: 1500px 600px;
   background-position: center top;
 	color: black;
+  margin:0;
+  padding:0;
 }
 
-h1{
-	margin: 0;
-	font-family: AR Julian;
+.footer{
+  position: absolute;
+	height: 30px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #333;
+	color: white;
+  text-align: center;
+	padding-top: 7px;
 }
 
-h2{
-	font-family: AR Julian;
-}
-
-th{
-	font-size: 110%;
+#footer_text{
+	padding:0px;
+	margin:0px;
 }
 
 #container{
@@ -33,7 +46,20 @@ th{
 	margin-right: auto;
 	clear: both;
 	margin-top: 130px;
-	margin-bottom: 20px;
+  margin-bottom:45px;/* Height of footer*/
+}
+
+h1{
+	margin: 0;
+
+}
+
+h2{
+
+}
+
+th{
+	font-size: 110%;
 }
 
 #header {
@@ -56,15 +82,6 @@ th{
   box-shadow: 5px 5px 5px #999999;
 }
 
-#container2{
-	display: table;
-	margin: 0 auto;
-}
-
-#container2 a{
-	margin: 0 2px;
-}
-
 button{
 	background-color: crimson;
 	color: white;
@@ -74,13 +91,6 @@ button{
 }
 
 button:hover{
-  background-color: LightGreen;
-}
-
-footer{
-	clear: both;
-	padding-left:10px;
-	background-color: #333;
-	color: white;
-	margin-top: 40px;
+  background-color: #b3e6b3;
+	color: black;
 }

@@ -25,8 +25,11 @@ router.get('/game', Authfunc.ensureauth, function(req, res){
 
 router.post('/createLobby', Authfunc.ensureauth, function(req, res){
   if(lobby_server.ensureUserNotInLobby(req.user)){
+    //validate req.body.maxusers, req.body.lobbyname, req.user.pa
+
+
     var lobbyId = shortid.generate();
-    lobby_server.createLobby(lobbyId, req.user, 5, "The Flying Dragon", "");
+    lobby_server.createLobby(lobbyId, req.user, req.body.maxusers, req.body.lobbyname, "");
     req.flash('lobbyId', lobbyId);
     req.session.canJoin = true;
     res.redirect('game');
