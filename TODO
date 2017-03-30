@@ -1,23 +1,41 @@
 TODO
-5. "glömt lösenord?"
-6. Lägga till Goggle+ och twitter-login?
-7. lägg till namn i account
-8. Änvändarnamn får ej ha fula ord i sig (typ dickfuck)
+
+VERSION 1
+Jessica
+* Grafisk Design på Canvas
+* Inte skriva ut lobbies som har maxplayers
+* Popup för lösenord
+* Generell Grafisk Design
+
+Båda
+* Implementera Attacker
+* Lösenordscheck
+
+Adrian:
+* Lägga in "name" i user
+* Implementera Maxplayers när man försöker gå in i lobby
 
 
-Frontend
--Stå vem man är inloggad som
--Inte behöva skriva om allt om email eller lösenord är ogiltig
--Keep me logged in
--"How to play"-popup
--"glömt lösenord?"
--Sök efter lobby
--Visa sidor av lobbies ?
--Se namn istället för "account"
--footer
--sätta intervall för rank som får joina när man skapar lobby
+VERSION 2
+* "Practice"-flik på navbar, samt implementera vanlig tetris för en spelare
+* Kunna ändra andvändarinformation (namn, mail, lösenord)
+* "glömt lösenord?"
+* Lägga till Goggle+ och twitter login?
+* När man registrerar sig blir man även inloggad som den användaren
+* Inte behöva skriva om allt om email eller lösenord är ogiltig
+* "Keep me logged in"-alternativ
+* Sök efter lobby
+* Visa sidor av lobbies istället för alla på en gång?
+* isActivelistan hos gameClient ska vara hos server
+* Ladda upp profilbild
+* Chat i spelet/någon kommunication
 
-Båda:
--isActivelistan hos gameClient ska vara hos server
-man har endast sitt eget board
-Ladda upp bild
+
+VERSION 3
+* Användarnamn får ej ha fula ord i sig (typ dickfuck)
+* Mer alternativ när man skapar en lobby (nivå/rank på spelare exempelvis)
+* Filter när man letar efter lobby
+
+
+VERSION ?
+* Spela mot dator?

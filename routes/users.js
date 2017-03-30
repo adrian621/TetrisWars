@@ -15,8 +15,9 @@ router.get('/login', Authfunc.ensureNotauth, function(req, res){
 });
 router.get('/account', Authfunc.ensureauth, function(req, res){
   User.getUserById(req.user.id, function(err, user){
-    res.render('account', {username: user.username, email: user.email, rank: user.rank});
-  }); 
+    console.log(user);
+    res.render('account', {username: user.username, email: user.email, rank: user.rank, name: user.name});
+  });
 });
 router.get('/logout', Authfunc.ensureauth, function(req, res){
   req.logout();
@@ -83,21 +84,20 @@ router.post('/register', function(req, res){
             if(user){
               res.render('register', {errors: [{param: 'email', msg: 'Email is already taken', value: '' }]});
             }
-              else {
-
-                var newUser = new User();
-                newUser.username = name;
-                newUser.email = email;
-                newUser.username = username;
-                newUser.password = password;
-                newUser.rank = 0;
-                User.createUser(newUser, (err, user) => {
-                  if(err) throw err;
-                  console.log(err);
-                });
-                req.flash('success_msg', 'you are registerd');
-                res.redirect('/login');
-              }
+            else {
+              var newUser = new User();
+              newUser.name = name;
+              newUser.email = email;
+              newUser.username = username;
+              newUser.password = password;
+              newUser.rank = 0;
+              User.createUser(newUser, (err, user) => {
+                if(err) throw err;
+                console.log(err);
+              });
+              req.flash('success_msg', 'you are registerd');
+              res.redirect('/login');
+            }
           });
         }
       });

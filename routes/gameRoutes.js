@@ -15,6 +15,10 @@ router.get('/createLobby', Authfunc.ensureauth ,function(req, res){
   res.render('createLobby');
 });
 
+router.get('/howToPlay', Authfunc.ensureauth ,function(req, res){
+  res.render('howToPlay');
+});
+
 router.get('/game', Authfunc.ensureauth, function(req, res){
   if(req.session.canJoin){
     req.session.canJoin = false;
