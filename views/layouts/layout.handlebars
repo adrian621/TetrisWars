@@ -16,6 +16,16 @@
 
 	<body>
 		<div id="container">
+				<!--{{#if success_msg}}
+					<div class="alert alert-success">{{success_msg}}</div>
+				{{/if}}-->
+				{{#if error_msg}}
+					<div class="alert alert-danger">{{error_msg}}</div>
+				{{/if}}
+				{{#if error}}
+					<div class="alert alert-danger">{{error}}</div>
+				{{/if}}
+
 				{{{body}}}
 		</div>
 
@@ -25,17 +35,8 @@
 				<ul class="center">
 					<li><a href="/">TetrisWars</a></li>
 					<li><a href="lobby" class="border_left">Play</a></li>
+					<li><a href="howToPlay" class="border_left">How To Play</a></li>
 					<li><a href="toplist" class="border_left">Toplist</a></li>
-
-					{{#if success_msg}}
-						<div class="alert alert-success">{{success_msg}}</div>
-					{{/if}}
-					{{#if error_msg}}
-						<div class="alert alert-danger">{{error_msg}}</div>
-					{{/if}}
-					{{#if error}}
-						<div class="alert alert-danger">{{error}}</div>
-					{{/if}}
 
 					{{#if user}}
 						<li><a href="account" class="border_left">Account</a></li>
@@ -50,7 +51,7 @@
 		</div>
 
 		<div class="footer">
-			<p id="footer_text">&copy Jessica Hillert and Adrian Tyrevall</p>
+			<p id="footer_text">Copyright &copy 2017 Jessica Hillert and Adrian Tyrevall. All rights reserved.</p>
 		</div>
 	</body>
 </html>

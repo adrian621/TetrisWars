@@ -46,7 +46,7 @@ body{
 	margin-right: auto;
 	clear: both;
 	margin-top: 130px;
-  margin-bottom:45px;/* Height of footer*/
+  margin-bottom:100px;/* Height of footer*/
 }
 
 h1{
@@ -93,4 +93,12 @@ button{
 button:hover{
   background-color: #b3e6b3;
 	color: black;
+}
+
+.alert{
+	width: 100%;
+}
+
+.form-group{
+	width: 100%;
 }
