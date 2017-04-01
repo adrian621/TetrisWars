@@ -15,7 +15,7 @@ router.get('/createLobby', Authfunc.ensureauth ,function(req, res){
   res.render('createLobby');
 });
 
-router.get('/howToPlay', Authfunc.ensureauth ,function(req, res){
+router.get('/howToPlay', function(req, res){
   res.render('howToPlay');
 });
 
@@ -30,36 +30,52 @@ router.get('/game', Authfunc.ensureauth, function(req, res){
 router.post('/createLobby', Authfunc.ensureauth, function(req, res){
   if(lobby_server.ensureUserNotInLobby(req.user)){
     //validate req.body.maxusers, req.body.lobbyname, req.user.pa
+    var lobbyname = req.body.lobbyname;
+    var maxusers = req.body.maxusers;
+    req.checkBody('maxusers', 'Maxplayers is invalid').notEmpty().isInt();
+    req.checkBody('lobbyname', 'Lobbyname must be between 2 and 30 characters').len(2, 30);
 
-
-    var lobbyId = shortid.generate();
-    lobby_server.createLobby(lobbyId, req.user, req.body.maxusers, req.body.lobbyname, "");
-    req.flash('lobbyId', lobbyId);
-    req.session.canJoin = true;
-    res.redirect('game');
+    var errors = req.validationErrors();
+    if(errors){
+      res.render('createLobby', {errors:errors});
+    }
+    else{
+      var lobbyId = shortid.generate();
+      lobby_server.createLobby(lobbyId, req.user, req.body.maxusers, req.body.lobbyname, req.body.password);
+      req.flash('lobbyId', lobbyId);
+      req.session.canJoin = true;
+      res.redirect('game');
+    }
   }
   else{
     res.render('index', {error_msg: 'Unable to create lobby, User already in lobby'});
-}
+  }
 });
 
 router.post('/joinLobby', Authfunc.ensureauth, function(req, res){
   if(lobby_server.ensureUserNotInLobby(req.user)){
     var lobbyId = req.body.lobbyId;
-    if(!lobby_server.validateId(lobbyId)){
-      res.render('index', {error_msg: 'Unable to join lobby, Id not found'});
+    var pswInput = req.body.writePsw;
+    var lobby = lobby_server.getLobbyFromLobbyID(lobbyId);
+
+    if(lobby.maxUsers == lobby.lobbyUsers.length){
+      var lobbyInfo = lobby_server.getLobbyList2();
+      res.render('lobby', {error_msg: 'Lobby is full', lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids, lobbyUsers: lobbyInfo.users, lobbyMaxUsers: lobbyInfo.maxUsers, lobbyPassword: lobbyInfo.passwords});
     }
-    else{
-  //console.log('User join lobby with id fff: ' + req.body.lobbyId);
+    else if(lobby_server.validateId(lobbyId) & lobby.psw === pswInput){
       lobby_server.addUserToLobby_new_export(req.user, lobbyId);
       req.flash('lobbyId', lobbyId);
       req.session.canJoin = true;
       res.redirect('/game');
     }
+    else{
+      var lobbyInfo = lobby_server.getLobbyList2();
+      res.render('lobby', {error_msg: 'Incorrect Password', lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids, lobbyUsers: lobbyInfo.users, lobbyMaxUsers: lobbyInfo.maxUsers, lobbyPassword: lobbyInfo.passwords});
+    }
   }
-else{
-  res.render('index', {error_msg: 'Unable to join lobby, user already in lobby'})
-}
+  else{
+    res.render('index', {error_msg: 'You are already in a game'})
+  }
 });
 
 

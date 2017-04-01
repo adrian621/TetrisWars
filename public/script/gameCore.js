@@ -343,7 +343,7 @@ addCurrentToAllBlocks = function(board){
 //---------- Move Things ----------//
 collide = function(board){
 	for(i = 0; i < board.currentBlocks.length; i++){
-		if(board.currentBlocks[i].y >= board.y + board.height){
+		if(board.currentBlocks[i].y >= board.y + board.height || board.currentBlocks[i].y < board.y){
 			return true;
 		}
 		else if(board.currentBlocks[i].x >= board.x + board.width || board.currentBlocks[i].x < board.x){

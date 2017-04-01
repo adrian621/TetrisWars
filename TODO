@@ -2,21 +2,27 @@ TODO
 
 VERSION 1
 Jessica
-* Grafisk Design på Canvas
-* Inte skriva ut lobbies som har maxplayers
-* Popup för lösenord
-* Generell Grafisk Design
+* Skapa egna blockbilder
+* Canvassaker (Vinnarpokal, visa rankändring, Nextblock)
 
 Båda
 * Implementera Attacker
-* Lösenordscheck
+* Karusellens bilder
 
-Adrian:
-* Lägga in "name" i user
-* Implementera Maxplayers när man försöker gå in i lobby
+Adrian
+* Rankändring ?
+
+BUGGS
+* User does not diseaper from gameserver or something, and gets dupletes (DONE?)
+* User gets wrong board, players can get same board (DONE?)
 
 
 VERSION 2
+* Dynamic slotsTaken and dynamic usernames ?
+* "No lobbies currently exists"
+* Sitt eget bräde är större än de andras
+* Inte skriva ut lobbies som har maxplayers ?
+* Användarnamn har alltid en stor bokstav i början ?
 * "Practice"-flik på navbar, samt implementera vanlig tetris för en spelare
 * Kunna ändra andvändarinformation (namn, mail, lösenord)
 * "glömt lösenord?"

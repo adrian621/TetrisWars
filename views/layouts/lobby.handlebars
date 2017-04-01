@@ -1,9 +1,6 @@
 <h2>Lobbies</h2>
 </br>
 {{!-- Här skicks lobbyId för specifik lobby till server. Skriv om så att rätt lobbyId skickas --}}
-<form id = "joinForm" method = "post" action="/joinLobby">
-   <input type = "hidden" id = "join" name = "lobbyId" value=""></input>
-</form>
 
 <table class="table" id = "tableId">
     <thead>
@@ -34,3 +31,23 @@
 <div id = "createLobby">
   <a href = "createLobby"><button type="button" id="NewLobbyButton">Create lobby</button></a>
 </div>
+
+<div id=popup>
+  <p id="close">Close</p>
+  <br/>
+  <h3 id="popupText">Password Required</h3>
+  <br/>
+
+  <form id="joinFormPsw" method="post" action="/joinLobby">
+    <div class = "form-group">
+      <label id="popupLabel"></label>
+      <input type="text" class ="form-control popup-form" value="" placeholder="password" name = "writePsw">
+      <input type = "hidden" id = "joinPsw" name = "lobbyId" value=""></input>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<form id = "joinForm" method = "post" action="/joinLobby">
+   <input type = "hidden" id = "join" name = "lobbyId" value=""></input>
+</form>

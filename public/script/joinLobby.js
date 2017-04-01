@@ -52,42 +52,72 @@ updateLobby = function(idParam, usersParam){
 }
 
 addNewLobby = function(nameParam, idParam, usersParam, maxParam, hasPasswordParam){
-
 	var tr = document.createElement('tr');
-
 	var lobbyId = document.createElement('td');
 	var lobbyName = document.createElement('td');
 	var users = document.createElement('td');
 	var maxUsers = document.createElement('td');
 	var psw = document.createElement('td');
 	var tdButton = document.createElement('td');
-	var joinbutton = document.createElement('button');
-	var buttonText = document.createTextNode("Join");
 
 	lobbyName.innerHTML = nameParam;
 	users.innerHTML = usersParam;
 	maxUsers.innerHTML = maxParam;
 	psw.innerHTML = hasPasswordParam;
-	joinbutton.createTextNode = "Join";
-	joinbutton.setAttribute('type', 'button');
 	tr.id = idParam;
 
 	tr.appendChild(lobbyName);
 	tr.appendChild(users);
 	tr.appendChild(maxUsers);
 	tr.appendChild(psw);
-	joinbutton.appendChild(buttonText);
-	tdButton.appendChild(joinbutton);
+
+	if (hasPasswordParam === "No") {
+		var joinbutton = document.createElement('button');
+		var buttonText = document.createTextNode("Join");
+		joinbutton.createTextNode = "Join";
+		joinbutton.setAttribute('type', 'button');
+		joinbutton.appendChild(buttonText);
+		tdButton.appendChild(joinbutton);
+
+		joinbutton.onclick = (function(id) {return function() {
+			var form = document.getElementById("joinFormPsw");
+			form.joinPsw.value = id;
+			document.forms["joinFormPsw"].submit();
+		};})(idParam);
+
+	}else{ //Has password
+		var joinButtonPsw = document.createElement('button');
+		var buttonTextPsw = document.createTextNode("Join");
+		joinButtonPsw.createTextNode = "Join";
+		joinButtonPsw.setAttribute('type', 'button');
+		joinButtonPsw.appendChild(buttonTextPsw);
+		joinButtonPsw.className = "joinButtonPsw";
+		joinButtonPsw.id="button"+idParam;
+		tdButton.appendChild(joinButtonPsw);
+
+		joinButtonPsw.onclick = (function(id) {return function() {
+			var tr = document.getElementById(id);
+			var lobbyname = tr.childNodes[0].innerHTML;
+			var form = document.getElementById("joinFormPsw");
+			form.joinPsw.value = id;
+			document.getElementById("popup").style.display = "block";
+			document.getElementById("popupLabel").innerHTML = "Password for "+lobbyname;
+		};})(idParam);
+	}
+
 	tr.appendChild(tdButton);
 	tableBody.appendChild(tr);
-
-	joinbutton.onclick = (function(id) {return function() {
-		var form = document.getElementById("joinForm");
-		form.join.value = id;
-		document.forms["joinForm"].submit();
-};})(idParam);
-
 }
+
+window.onclick = function(event) {
+	var close = document.getElementById("close");
+	if(popup.style.display === "block"){
+		if (event.target == close) {
+			popup.style.display = "none";
+		}
+	}
+}
+
 function setValue(id){
 	console.log("id is "+id);
   var form = document.getElementById("joinForm");
