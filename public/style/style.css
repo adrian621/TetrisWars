@@ -83,7 +83,7 @@ th{
 }
 
 button{
-	background-color: crimson;
+	background-color: #428a65;
 	color: white;
 	box-shadow: 2px 2px 5px #888888;
 	border-radius: 6px;
@@ -101,4 +101,8 @@ button:hover{
 
 .form-group{
 	width: 100%;
+}
+
+.form-control{
+	color: black;
 }

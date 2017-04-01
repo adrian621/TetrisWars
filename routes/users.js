@@ -55,15 +55,12 @@ router.post('/register', function(req, res){
     var password2 = req.body.password2;
 
     //validation
-    req.checkBody('name', 'Name is required').notEmpty();
-    //req.checkBody('username', 'Username exist').usernameNotExist();
-
-    req.checkBody('email', 'Email is required').notEmpty();
+    req.checkBody('name', 'Name must be between 4 and 100 characters').len(1, 100);
     req.checkBody('email', 'Email is invalid').isEmail();
-    req.checkBody('username', 'Username is required').notEmpty();
-    req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('email', 'Email adress must be between 4 and 40 characters').len(4, 40);
+    req.checkBody('username', 'Username must be between 4 and 20 characters').len(4, 20);
+    req.checkBody('password', 'Password must be between 4 and 20 characters').len(4, 20);
     req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
-
 
     var errors = req.validationErrors();
     //check through database aswell

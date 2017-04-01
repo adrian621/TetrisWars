@@ -1,24 +1,15 @@
+//----- Variables -----//
 var game_server = module.exports = {};
 var game_core = require('./gameCore');
 var ranking = require('./ranking');
-//TODO: need several intervals
-var interval;
 
-//----- Variables -----//
-//store this in lobby
-
+//----- Functions -----//
 game_server.move = function(io, data, lobby, indexUser, socket){
 	if(checkValidity(data, lobby, indexUser, socket) == false){
 		//TODO: correct time?
 		socket.emit('invalidBoard', {board: lobby.boards[indexUser]});
 	}
 }
-
-/*game_server.boardIsUpdated = function(data, lobby, client){
-	if(!checkValidity(data, lobby)){
-		client.emit('invalidBoard', {board: lobby.boards[data.user-1]});
-	}
-}*/
 
 game_server.emitToLobby = function(lobby, data){
 	for(var i = 0; i < lobby.clients.length; i++){
@@ -116,7 +107,7 @@ update = function(lobby){
 
 endGame = function(lobby){
 	console.log("Winner!!!");
-	clearInterval(interval);
+	clearInterval(lobby.interval);
 	lobby.isActive = false;
 	lobby.gameOvers = [];
 
@@ -146,22 +137,22 @@ endGame = function(lobby){
 		lobby.boards[i].time = 0;
 	}
   ranking.updateRank(losers, winnerId);
-
-
 	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards, distance:lobby.distance, blockSize:lobby.blockSize});
 }
 
 game_server.startGame = function(lobby, data){
-	/*lobby.boards = [];
-	game_core.addBoards(data, lobby.boards);*/
-
 	lobby.boards.forEach(function(board) {
-		console.log(data.place);
 	  board.randomNumbers = data.randomNumbers;
 	});
 
 	game_core.startGame(lobby.boards);
-	interval = setInterval(function(){update(lobby);}, 1000);
+	lobby.interval = setInterval(function(){update(lobby);}, 1000);
+
+	for(var i = 0; i < lobby.boards.length; i++){
+		lobby.lastStateBoards[i] = JSON.parse(JSON.stringify(lobby.boards[i]));
+	}
+
+	game_server.emitToLobby(lobby, {type: 'getStartBoards', boards: lobby.boards});
 }
 
 getBoardFromPlace = function(lobby, place){
