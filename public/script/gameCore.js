@@ -17,17 +17,13 @@
 	exports.addBoards = function(data, list){
 		for(i = 0; i < data.playerPosition.length; i++){
 			if(data.playerPosition[i] == 1){
-				Board((data.distance*(i+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, i, data.playerPosition);
+				Board(data, list, i);
 			}
 		}
 	};
 
-	/*exports.removeBoard = function(data, boards){
-		boards.splice()
-	};*/
-
 	exports.addBoard = function(data, list){
-		Board((data.distance*(data.place+1)-100), 100, 'black', data.blockSize*20, data.blockSize*10, data.blockSize, data.username, data.randomNumbers, list, data.place, data.playerPosition, data.id);
+		Board(data, list, data.place);
 	};
 
 	exports.moveBlocksExport = function(keycode, board){
@@ -36,9 +32,7 @@
 
 	exports.updateAllBoards = function(boards){
 		var gameOversThisRound = [];
-		var times = [];
 		for(var i = 0; i < boards.length; i++){
-			times.push(boards[i].time);
 			if(boards[i].isActive == true){
 				exports.updateBoard(boards[i]);
 				if(boards[i].isActive == false){
@@ -67,28 +61,21 @@
 }(typeof exports === 'undefined'? this.gameCore = {}: exports));
 
 
-//----- Variables -----//
-var blockSizePlayer = 10;
-var blockSizeOpponant = 10;
-var lobbyNumber;
-
-//---------- Block Things ----------//
 //----- FUNCTIONS -----//
-Block = function(x, y, color, blockSize, list){
+Block = function(x, y, color, list){
 	var block = {
-		x:x,
-		y:y,
-		color:color,
-		size:blockSize,
+		x:x, //In steps
+		y:y, //In steps
+		color: color
 	};
 	list[list.length] = block;
 }
 
 createIPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2, board.y , 'aqua', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'aqua', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize*2, 'aqua', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize*3, 'aqua', board.blockSize, list);
+	Block(board.width/2, 0 , 'aqua', list);
+	Block(board.width/2, 1, 'aqua', list);
+	Block(board.width/2, 2, 'aqua', list);
+	Block(board.width/2, 3, 'aqua', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'i';
 	}else{
@@ -98,28 +85,28 @@ createIPiece = function(list, typeOf, board){
 
 changeI = function(form, board){
 	if((form % 2) == 1){
-		board.currentBlocks[0].x -= board.blockSize*2;
-		board.currentBlocks[0].y += board.blockSize*2;
-		board.currentBlocks[1].x -= board.blockSize;
-		board.currentBlocks[1].y += board.blockSize;
-		board.currentBlocks[3].x += board.blockSize;
-		board.currentBlocks[3].y -= board.blockSize;
+		board.currentBlocks[0].x -= 2;
+		board.currentBlocks[0].y += 2;
+		board.currentBlocks[1].x -= 1;
+		board.currentBlocks[1].y += 1;
+		board.currentBlocks[3].x += 1;
+		board.currentBlocks[3].y -= 1;
 
 	}else{
-		board.currentBlocks[0].x += board.blockSize*2;
-		board.currentBlocks[0].y -= board.blockSize*2;
-		board.currentBlocks[1].x += board.blockSize;
-		board.currentBlocks[1].y -= board.blockSize;
-		board.currentBlocks[3].x -= board.blockSize;
-		board.currentBlocks[3].y += board.blockSize;
+		board.currentBlocks[0].x += 2;
+		board.currentBlocks[0].y -= 2;
+		board.currentBlocks[1].x += 1;
+		board.currentBlocks[1].y -= 1;
+		board.currentBlocks[3].x -= 1;
+		board.currentBlocks[3].y += 1;
 	}
 }
 
 createOPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2, board.y, 'yellow', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'yellow', board.blockSize, list);
-	Block(board.x + board.width/2 + board.blockSize, board.y, 'yellow', board.blockSize, list);
-	Block(board.x + board.width/2 + board.blockSize, board.y + board.blockSize, 'yellow', board.blockSize, list);
+	Block(board.width/2, 0, 'yellow', list);
+	Block(board.width/2, 0 + 1, 'yellow', list);
+	Block(board.width/2 + 1, 0, 'yellow', list);
+	Block(board.width/2 + 1, 1, 'yellow', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'o';
 	}else{
@@ -128,10 +115,10 @@ createOPiece = function(list, typeOf, board){
 }
 
 createTPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2, board.y, 'purple', board.blockSize, list);
-	Block(board.x + board.width/2 - board.blockSize, board.y + board.blockSize, 'purple', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'purple', board.blockSize, list);
-	Block(board.x + board.width/2 + board.blockSize, board.y + board.blockSize, 'purple', board.blockSize, list);
+	Block(board.width/2, 0, 'purple', list);
+	Block(board.width/2 - 1, 1, 'purple', list);
+	Block(board.width/2, 1, 'purple', list);
+	Block(board.width/2 + 1, 1, 'purple', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 't';
 	}else{
@@ -141,43 +128,43 @@ createTPiece = function(list, typeOf, board){
 
 changeT= function(form, board){
 	if((form % 4) == 1){
-		board.currentBlocks[0].x += board.blockSize;
-		board.currentBlocks[0].y += board.blockSize;
-		board.currentBlocks[1].x += board.blockSize;
-		board.currentBlocks[1].y -= board.blockSize;
-		board.currentBlocks[3].x -= board.blockSize;
-		board.currentBlocks[3].y += board.blockSize;
+		board.currentBlocks[0].x += 1;
+		board.currentBlocks[0].y += 1;
+		board.currentBlocks[1].x += 1;
+		board.currentBlocks[1].y -= 1;
+		board.currentBlocks[3].x -= 1;
+		board.currentBlocks[3].y += 1;
 	}
 	else if((form % 4) == 2){
-		board.currentBlocks[0].x -= board.blockSize;
-		board.currentBlocks[0].y += board.blockSize;
-		board.currentBlocks[1].x += board.blockSize;
-		board.currentBlocks[1].y += board.blockSize;
-		board.currentBlocks[3].x -= board.blockSize;
-		board.currentBlocks[3].y -= board.blockSize;
+		board.currentBlocks[0].x -= 1;
+		board.currentBlocks[0].y += 1;
+		board.currentBlocks[1].x += 1;
+		board.currentBlocks[1].y += 1;
+		board.currentBlocks[3].x -= 1;
+		board.currentBlocks[3].y -= 1;
 	}
 	else if((form % 4) == 3){
-		board.currentBlocks[0].x -= board.blockSize;
-		board.currentBlocks[0].y -= board.blockSize;
-		board.currentBlocks[1].x -= board.blockSize;
-		board.currentBlocks[1].y += board.blockSize;
-		board.currentBlocks[3].x += board.blockSize;
-		board.currentBlocks[3].y -= board.blockSize;
+		board.currentBlocks[0].x -= 1;
+		board.currentBlocks[0].y -= 1;
+		board.currentBlocks[1].x -= 1;
+		board.currentBlocks[1].y += 1;
+		board.currentBlocks[3].x += 1;
+		board.currentBlocks[3].y -= 1;
 	}else{
-		board.currentBlocks[0].x += board.blockSize;
-		board.currentBlocks[0].y -= board.blockSize;
-		board.currentBlocks[1].x -= board.blockSize;
-		board.currentBlocks[1].y -= board.blockSize;
-		board.currentBlocks[3].x += board.blockSize;
-		board.currentBlocks[3].y += board.blockSize;
+		board.currentBlocks[0].x += 1;
+		board.currentBlocks[0].y -= 1;
+		board.currentBlocks[1].x -= 1;
+		board.currentBlocks[1].y -= 1;
+		board.currentBlocks[3].x += 1;
+		board.currentBlocks[3].y += 1;
 	}
 }
 
 createSPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2, board.y, 'lime', board.blockSize, list);
-	Block(board.x + board.width/2 + board.blockSize, board.y, 'lime', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'lime', board.blockSize, list);
-	Block(board.x + board.width/2- board.blockSize, board.y + board.blockSize, 'lime', board.blockSize, list);
+	Block(board.width/2, 0, 'lime', list);
+	Block(board.width/2 + 1, 0, 'lime', list);
+	Block(board.width/2, 1, 'lime', list);
+	Block(board.width/2 - 1, 1, 'lime', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 's';
 	}else{
@@ -188,20 +175,20 @@ createSPiece = function(list, typeOf, board){
 changeS = function(form, board){
 	//var board = board[0];
 	if((form % 2) == 1){
-		board.currentBlocks[1].x -= board.blockSize*2; //TODO: Add board.blockSize
-		board.currentBlocks[3].y -= board.blockSize*2;
+		board.currentBlocks[1].x -= 2;
+		board.currentBlocks[3].y -= 2;
 	}
 	else{
-		board.currentBlocks[1].x += board.blockSize*2;
-		board.currentBlocks[3].y += board.blockSize*2;
+		board.currentBlocks[1].x += 2;
+		board.currentBlocks[3].y += 2;
 	}
 }
 
 createZPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2, board.y, 'red', board.blockSize, list);
-	Block(board.x + board.width/2 - board.blockSize, board.y, 'red', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'red', board.blockSize, list);
-	Block(board.x + board.width/2 + board.blockSize, board.y + board.blockSize, 'red', board.blockSize, list);
+	Block(board.width/2, 0, 'red', list);
+	Block(0 + board.width/2 - 1, 0, 'red', list);
+	Block(0 + board.width/2, 1, 'red', list);
+	Block(0 + board.width/2 + 1, 1, 'red', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'z';
 	}else{
@@ -211,19 +198,19 @@ createZPiece = function(list, typeOf, board){
 
 changeZ = function(form, board){
 	if((form % 2) == 1){
-		board.currentBlocks[1].x += board.blockSize*2;
-		board.currentBlocks[3].y -= board.blockSize*2;
+		board.currentBlocks[1].x += 2;
+		board.currentBlocks[3].y -= 2;
 	}else{
-		board.currentBlocks[1].x -= board.blockSize*2;
-		board.currentBlocks[3].y += board.blockSize*2;
+		board.currentBlocks[1].x -= 2;
+		board.currentBlocks[3].y += 2;
 	}
 }
 
 createJPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2, board.y, 'orange', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'orange', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize*2, 'orange', board.blockSize, list);
-	Block(board.x + board.width/2 + board.blockSize, board.y + board.blockSize*2, 'orange', board.blockSize, list);
+	Block(0 + board.width/2, 0, 'orange', list);
+	Block(0 + board.width/2, 1, 'orange', list);
+	Block(0 + board.width/2, 2, 'orange', list);
+	Block(0 + board.width/2 + 1, 2, 'orange', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'j';
 	}else{
@@ -233,40 +220,40 @@ createJPiece = function(list, typeOf, board){
 
 changeJ = function(form, board){
 	if((form % 4) == 1){
-		board.currentBlocks[0].x += board.blockSize;
-		board.currentBlocks[0].y += board.blockSize;
-		board.currentBlocks[2].x -= board.blockSize;
-		board.currentBlocks[2].y -= board.blockSize;
-		board.currentBlocks[3].x -= board.blockSize*2;
+		board.currentBlocks[0].x += 1;
+		board.currentBlocks[0].y += 1;
+		board.currentBlocks[2].x -= 1;
+		board.currentBlocks[2].y -= 1;
+		board.currentBlocks[3].x -= 2;
 
 	}
 	else if((form % 4) == 2){
-		board.currentBlocks[0].x -= board.blockSize;
-		board.currentBlocks[0].y += board.blockSize;
-		board.currentBlocks[2].x += board.blockSize;
-		board.currentBlocks[2].y -= board.blockSize;
-		board.currentBlocks[3].y -= board.blockSize*2;
+		board.currentBlocks[0].x -= 1;
+		board.currentBlocks[0].y += 1;
+		board.currentBlocks[2].x += 1;
+		board.currentBlocks[2].y -= 1;
+		board.currentBlocks[3].y -= 2;
 	}
 	else if((form % 4) == 3){
-		board.currentBlocks[0].x -= board.blockSize;
-		board.currentBlocks[0].y -= board.blockSize;
-		board.currentBlocks[2].x += board.blockSize;
-		board.currentBlocks[2].y += board.blockSize;
-		board.currentBlocks[3].x += board.blockSize*2;
+		board.currentBlocks[0].x -= 1;
+		board.currentBlocks[0].y -= 1;
+		board.currentBlocks[2].x += 1;
+		board.currentBlocks[2].y += 1;
+		board.currentBlocks[3].x += 2;
 	}else{
-		board.currentBlocks[0].x += board.blockSize;
-		board.currentBlocks[0].y -= board.blockSize;
-		board.currentBlocks[2].x -= board.blockSize;
-		board.currentBlocks[2].y += board.blockSize;
-		board.currentBlocks[3].y += board.blockSize*2;
+		board.currentBlocks[0].x += 1;
+		board.currentBlocks[0].y -= 1;
+		board.currentBlocks[2].x -= 1;
+		board.currentBlocks[2].y += 1;
+		board.currentBlocks[3].y += 2;
 	}
 }
 
 createLPiece = function(list, typeOf, board){
-	Block(board.x + board.width/2 , board.y, 'blue', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize, 'blue', board.blockSize, list);
-	Block(board.x + board.width/2, board.y + board.blockSize*2, 'blue', board.blockSize, list);
-	Block(board.x + board.width/2 - board.blockSize, board.y + board.blockSize*2, 'blue', board.blockSize, list);
+	Block(0 + board.width/2 , 0, 'blue', list);
+	Block(0 + board.width/2, 1, 'blue', list);
+	Block(0 + board.width/2, 2, 'blue', list);
+	Block(0 + board.width/2 - 1, 2, 'blue', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'l';
 	}else{
@@ -276,37 +263,36 @@ createLPiece = function(list, typeOf, board){
 
 changeL= function(form, board){
 	if((form % 4) == 1){
-		board.currentBlocks[0].x += board.blockSize;
-		board.currentBlocks[0].y += board.blockSize;
-		board.currentBlocks[2].x -= board.blockSize;
-		board.currentBlocks[2].y -= board.blockSize;
-		board.currentBlocks[3].y -= board.blockSize*2;
+		board.currentBlocks[0].x += 1;
+		board.currentBlocks[0].y += 1;
+		board.currentBlocks[2].x -= 1;
+		board.currentBlocks[2].y -= 1;
+		board.currentBlocks[3].y -= 2;
 
 	}
 	else if((form % 4) == 2){
-		board.currentBlocks[0].x -= board.blockSize;
-		board.currentBlocks[0].y += board.blockSize;
-		board.currentBlocks[2].x += board.blockSize;
-		board.currentBlocks[2].y -= board.blockSize;
-		board.currentBlocks[3].x += board.blockSize*2;
+		board.currentBlocks[0].x -= 1;
+		board.currentBlocks[0].y += 1;
+		board.currentBlocks[2].x += 1;
+		board.currentBlocks[2].y -= 1;
+		board.currentBlocks[3].x += 2;
 	}
 	else if((form % 4) == 3){
-		board.currentBlocks[0].x -= board.blockSize;
-		board.currentBlocks[0].y -= board.blockSize;
-		board.currentBlocks[2].x += board.blockSize;
-		board.currentBlocks[2].y += board.blockSize;
-		board.currentBlocks[3].y += board.blockSize*2;
+		board.currentBlocks[0].x -= 1;
+		board.currentBlocks[0].y -= 1;
+		board.currentBlocks[2].x += 1;
+		board.currentBlocks[2].y += 1;
+		board.currentBlocks[3].y += 2;
 	}else{
-		board.currentBlocks[0].x += board.blockSize;
-		board.currentBlocks[0].y -= board.blockSize;
-		board.currentBlocks[2].x -= board.blockSize;
-		board.currentBlocks[2].y += board.blockSize;
-		board.currentBlocks[3].x -= board.blockSize*2;
+		board.currentBlocks[0].x += 1;
+		board.currentBlocks[0].y -= 1;
+		board.currentBlocks[2].x -= 1;
+		board.currentBlocks[2].y += 1;
+		board.currentBlocks[3].x -= 2;
 	}
 }
 
 createTetromino = function(list, typeOf, board){
-		//var rand = Math.round(Math.random() * 7);
 		var rand = board.randomNumbers[board.randomNumbersCounter];
 		board.randomNumbersCounter +=1;
 		switch(rand){
@@ -343,10 +329,10 @@ addCurrentToAllBlocks = function(board){
 //---------- Move Things ----------//
 collide = function(board){
 	for(i = 0; i < board.currentBlocks.length; i++){
-		if(board.currentBlocks[i].y >= board.y + board.height || board.currentBlocks[i].y < board.y){
+		if(board.currentBlocks[i].y >= board.height || board.currentBlocks[i].y < 0){
 			return true;
 		}
-		else if(board.currentBlocks[i].x >= board.x + board.width || board.currentBlocks[i].x < board.x){
+		else if(board.currentBlocks[i].x >= board.width || board.currentBlocks[i].x < 0){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
@@ -384,11 +370,11 @@ changeForm = function(form, board){
 
 collideDown = function(board){
 	for(i = 0; i < board.currentBlocks.length; i++){
-		if(board.currentBlocks[i].y == (board.y + board.height - board.blockSize)){
+		if(board.currentBlocks[i].y == (board.height - 1)){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].y == (board.currentBlocks[i].y + board.blockSize)
+			if((board.allBlocks[a].y - 1) == board.currentBlocks[i].y
 			&& board.allBlocks[a].x == board.currentBlocks[i].x){
 				return true;
 			}
@@ -398,11 +384,11 @@ collideDown = function(board){
 
 collideRight = function(board){
 	for(i = 0; i < board.currentBlocks.length; i++){
-		if(board.currentBlocks[i].x == (board.x + board.width - board.blockSize)){
+		if(board.currentBlocks[i].x == board.width - 1){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].x == (board.currentBlocks[i].x + board.blockSize)
+			if((board.allBlocks[a].x - 1) == board.currentBlocks[i].x
 			&& board.allBlocks[a].y == board.currentBlocks[i].y){
 				return true;
 			}
@@ -412,11 +398,11 @@ collideRight = function(board){
 
 collideLeft = function(board){
 	for(i = 0; i < board.currentBlocks.length; i++){
-		if(board.currentBlocks[i].x == board.x){
+		if(board.currentBlocks[i].x == 0){
 			return true;
 		}
 		for(a = 0; a < board.allBlocks.length; a++){
-			if(board.allBlocks[a].x == (board.currentBlocks[i].x - board.blockSize)
+			if(board.allBlocks[a].x == (board.currentBlocks[i].x - 1)
 			&& board.allBlocks[a].y == board.currentBlocks[i].y){
 				return true;
 			}
@@ -431,7 +417,7 @@ moveLeft = function(board){
 		}
 	}
 	for(i = 0; i < board.currentBlocks.length; i++){
-		board.currentBlocks[i].x -= board.currentBlocks[i].size;
+		board.currentBlocks[i].x -= 1;
 	}
 }
 
@@ -442,7 +428,7 @@ moveRight = function(board){
 		}
 	}
 	for(i = 0; i < board.currentBlocks.length; i++){
-		board.currentBlocks[i].x += board.currentBlocks[i].size;
+		board.currentBlocks[i].x += 1;
 	}
 }
 
@@ -453,7 +439,7 @@ moveDown = function(user, board){
 		}
 	}
 	for(i = 0; i < board.currentBlocks.length; i++){
-		board.currentBlocks[i].y += board.currentBlocks[i].size;
+		board.currentBlocks[i].y += 1;
 	}
 }
 
@@ -475,29 +461,28 @@ moveBlocks = function(keycode, board){
 
 //---------- Generall Things ----------//
 //----- Structs -----//
-Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers, boards, place, playerPosition, id){
+Board = function(data, boards, place){
 	var board = {
-		x:x,
-		y:y,
-		bgColor:'gainsboro', //bgColor
-		height:height,
-		width:width,
-		blockSize:blockSize,
-		player: player,
+		x: data.playerBoardX, //steps
+		y: data.playerBoardY, //steps
+		bgColor: 'gainsboro', //bgColor
+		height: 20, //how many blocks
+		width: 10,  //how many blocks
+		player: data.username,
 		allBlocks: [],
 		nextBlocks: [],
 		currentBlocks: [],
 		currentBlockType: 'a',
 		currentBlockForm: 0,
 		nextBlockType: 'a',
-		randomNumbers:randomNumbers,
+		randomNumbers: data.randomNumbers,
 		randomNumbersCounter: 0,
 		isActive: false,
 		isReady: false,
 		place: place,
-		playerPosition: playerPosition,
+		playerPosition: data.playerPosition,
 		time: 0,
-		id: id
+		id: data.id
 	};
 	boards[boards.length] = board;
 }
@@ -505,7 +490,7 @@ Board = function(x, y, bgColor, height, width, blockSize, player, randomNumbers,
 //----- Game Logic Functions -----//
 gameOver = function(board){
 	for(i = 0; i < board.allBlocks.length; i++){
-		if(board.allBlocks[i].y == board.y){
+		if(board.allBlocks[i].y == 0){
 			return true;
 		}
 	}
@@ -524,7 +509,7 @@ moveDownAboveOrDelete = function(higherThan, board){
 
 	for(var i = 0; i < board.allBlocks.length; i++){
 		if(board.allBlocks[i].y < higherThan){
-		board.allBlocks[i].y += board.blockSize;
+		board.allBlocks[i].y += 1;
 		}
 	}
 }
@@ -534,21 +519,21 @@ fullRowControll = function(board){
 	var rowWasCleared = false;
 
 	//Creates zeros in the list counter on all spots
-	for(var i = 0; i < board.height/board.blockSize; i++){
+	for(var i = 0; i < board.height; i++){
 		counter[i] = 0;
 	}
 
 	//Counts all blocks per row
 	for(var a = 0; a < board.allBlocks.length; a++){
-		counter[((board.allBlocks[a].y-board.y)/board.blockSize)] += 1;
+		counter[board.allBlocks[a].y] += 1;
 	}
 
 	//go through all elements in counter
 	for(var r = 0; r < counter.length; r++){
 		//Checks if row is full
-		if(counter[r] == (board.width/board.blockSize)){
+		if(counter[r] == (board.width)){
 			//Row is full
-			moveDownAboveOrDelete((r*(board.blockSize) + board.y), board);
+			moveDownAboveOrDelete(r, board);
 			rowWasCleared = true;
 		}
 	}

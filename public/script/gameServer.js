@@ -6,7 +6,6 @@ var ranking = require('./ranking');
 //----- Functions -----//
 game_server.move = function(io, data, lobby, indexUser, socket){
 	if(checkValidity(data, lobby, indexUser, socket) == false){
-		//TODO: correct time?
 		socket.emit('invalidBoard', {board: lobby.boards[indexUser]});
 	}
 }
@@ -30,6 +29,10 @@ game_server.addBoardToLobby  = function(data, list){
 };
 
 blockListEqual = function(blocks_1, blocks_2){
+	if(!blocks_2){
+		console.log("new saftey thing");
+		return false;
+	}
 	if(blocks_1.length != blocks_2.length){
 		return false;
 	}
@@ -59,7 +62,7 @@ checkValidity = function(data, lobby, indexUser, socket){
 		}
 		else{//Correct in this state
 			game_core.moveBlocksExport(data.move, lobby.boards[indexUser]);
-			game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.boards[indexUser]});
+			game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.boards[indexUser], playerPosition:lobby.slotsTaken, place:lobby.boards[indexUser].place});
 		}
 	}
 
@@ -73,7 +76,7 @@ checkValidity = function(data, lobby, indexUser, socket){
 			game_core.moveBlocksExport(data.move, lobby.lastStateBoards[indexUser]);
 			lobby.boards[indexUser] = JSON.parse(JSON.stringify(lobby.lastStateBoards[indexUser]));
 			game_core.updateBoard(lobby.boards[indexUser]);
-			game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.lastStateBoards[indexUser]});
+			game_server.broadcastToLobby(lobby, socket, {type: 'move', board: lobby.lastStateBoards[indexUser], playerPosition:lobby.slotsTaken, place:lobby.boards[indexUser].place});
 		}
 	}
 
@@ -100,8 +103,7 @@ update = function(lobby){
 		endGame(lobby);
 	}
 	else{ //not game over
-		//TODO: get new randomnumbers for next game, get rank
-		game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards});
+		game_server.emitToLobby(lobby, {type: 'update', boards: lobby.boards, playerPosition:lobby.slotsTaken});
 	}
 }
 
@@ -116,14 +118,14 @@ endGame = function(lobby){
 	}
 
 	var winner = "";
+	var winnerPlace = 0;
 	var losers = [];
-	var place = 0;
 	//TODO: if both last users lost on same intervall
 	for(var i = 0; i < lobby.boards.length; i++){
 		if(lobby.boards[i].isActive){
 			winner = lobby.boards[i].player;
 			winnerId = lobby.boards[i].id;
-			place = lobby.boards[i].place;
+			winnerPlace = lobby.boards[i].place;
 		}
 		else{
 			losers.push(lobby.boards[i].id);
@@ -137,7 +139,7 @@ endGame = function(lobby){
 		lobby.boards[i].time = 0;
 	}
   ranking.updateRank(losers, winnerId);
-	game_server.emitToLobby(lobby, {type: 'winner', name: winner, place:place, playerPosition:lobby.slotsTaken, boards:lobby.boards, distance:lobby.distance, blockSize:lobby.blockSize});
+	game_server.emitToLobby(lobby, {type: 'winner', winnerPlace: winnerPlace, playerPosition:lobby.slotsTaken, boards:lobby.boards});
 }
 
 game_server.startGame = function(lobby, data){
@@ -152,7 +154,7 @@ game_server.startGame = function(lobby, data){
 		lobby.lastStateBoards[i] = JSON.parse(JSON.stringify(lobby.boards[i]));
 	}
 
-	game_server.emitToLobby(lobby, {type: 'getStartBoards', boards: lobby.boards});
+	game_server.emitToLobby(lobby, {type: 'getStartBoards', boards: lobby.boards, playerPosition:lobby.slotsTaken});
 }
 
 getBoardFromPlace = function(lobby, place){
