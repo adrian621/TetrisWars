@@ -8,7 +8,7 @@ var lobby_server = require('../public/script/lobbyServer');
 
 router.get('/lobby', Authfunc.ensureauth ,function(req, res){
   var lobbyInfo = lobby_server.getLobbyList2();
-  res.render('lobby', {lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids, lobbyUsers: lobbyInfo.users, lobbyMaxUsers: lobbyInfo.maxUsers, lobbyPassword: lobbyInfo.passwords});
+  res.render('lobby', {lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids, lobbyUsers: lobbyInfo.users, lobbyMaxUsers: lobbyInfo.maxUsers, lobbyPassword: lobbyInfo.passwords, lobbyActives: lobbyInfo.actives});
 });
 
 router.get('/createLobby', Authfunc.ensureauth ,function(req, res){
@@ -58,7 +58,7 @@ router.post('/joinLobby', Authfunc.ensureauth, function(req, res){
     var pswInput = req.body.writePsw;
     var lobby = lobby_server.getLobbyFromLobbyID(lobbyId);
 
-    if(lobby.maxUsers == lobby.lobbyUsers.length){
+    if(lobby.maxUsers == lobby.lobbyUsers.length+lobby.waitingLine.length){
       var lobbyInfo = lobby_server.getLobbyList2();
       res.render('lobby', {error_msg: 'Lobby is full', lobbyNames: lobbyInfo.name, lobbyIds: lobbyInfo.ids, lobbyUsers: lobbyInfo.users, lobbyMaxUsers: lobbyInfo.maxUsers, lobbyPassword: lobbyInfo.passwords});
     }

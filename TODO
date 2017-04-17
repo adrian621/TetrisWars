@@ -1,31 +1,44 @@
-TODO
+POÄNGSYSTEM
+Antal spelare   1:a   2:a   3:a   4:a   5:a   6:a
+2 spelare        +1   -1
+3 spelare        +1    0    -1
+4 spelare        +2   +1    -1    -2
+5 spelare        +2   +1     0    -1    -2
+6 spelare        +3   +2    +1    -1    -2    -3
 
+
+TODO
 VERSION 1
 Jessica
-* Vinnarpokal
-* Visa rankändring
-* Nextblock
-* Skapa egna blockbilder
-* "Password Requaired"-box ska vara i mitten av skärmen
-* Allt som har med att en användare lämnar lobbyn
 * En användare går med i en lobby när den är igång/åskådare
+* Skapa egna blockbilder
+* BUGGAR
 
 Båda
 * Implementera Attacker
 * Karusellens bilder
+* Testning
 
 Adrian
 * Rankändring ?
 
 BUGS
-* 
+* Visar inte alla moves (men de görs) (när update och move sker samtidigt ?)
 
 VERSION 2
+* Ljud (ljudeffekter, bakgrundsmusik)
+* LOGGA
+* Vinnarpokaler
+* Flytta när man håller inne en knapp
+* Karusellens pilar "fastnar"
+* Knapp för att sätta på/stänga av att folk får joina när det är igång ?
+* rita upp 2:a- och 3:a-pokaler
+* L-tetromino har type l, samma för j
 * Rita alla egna bilder
 * Dynamic slotsTaken and dynamic usernames ?
 * "No lobbies currently exists"
 * Inte skriva ut lobbies som har maxplayers ?
-* Användarnamn har alltid en stor bokstav i början ?
+* Användarnamn har alltid en stor bokstav i början
 * "Practice"-flik på navbar, samt implementera vanlig tetris för en spelare
 * Kunna ändra andvändarinformation (namn, mail, lösenord)
 * "glömt lösenord?"
@@ -38,6 +51,7 @@ VERSION 2
 * isActivelistan hos gameClient ska vara hos server
 * Ladda upp profilbild
 * Chat i spelet/någon kommunication
+* Ändra maxplayers in game ?
 
 
 VERSION 3

@@ -11,24 +11,24 @@ newLobbyList = function(){
 	var maxUsersList = lobbyMaxUsers.split(",");
 	var passwordList = lobbyPassword.split(",");
 	var usersList = lobbyUsers.split(",");
+	var activesList = lobbyActives.split(",");
 
 	if(lobbyNamesList[0] == ""){
 		return;
 	}
 
 	for(var i = 0; i < lobbyNamesList.length; i++){
-		addNewLobby(lobbyNamesList[i], lobbyIdsList[i], usersList[i], maxUsersList[i], passwordList[i]);
+		addNewLobby(lobbyNamesList[i], lobbyIdsList[i], usersList[i], maxUsersList[i], passwordList[i], activesList[i]);
 	}
 }
 
 join.on('NewLobbyInfo', function(data){
-	console.log('the id is sss: ' + data.id);
-	addNewLobby(data.name, data.id, data.users, data.maxusers, data.hasPassword);
+	addNewLobby(data.name, data.id, data.users, data.maxusers, data.hasPassword, data.isActive);
 });
 
 join.on('UpdateLobbyInfo', function(data){
 	if(data.users != 0){
-	updateLobby(data.id, data.users);
+	updateLobby(data.id, data.users, data.isActive);
 	}
 	else {
 		removeLobby(data.id);
@@ -36,22 +36,19 @@ join.on('UpdateLobbyInfo', function(data){
 });
 
 removeLobby = function(idParam){
-//console.log('id to remove is: ' + idParam);
 var tr = document.getElementById(idParam);
 index = tr.rowIndex;
-//console.log(index);
 document.getElementById("tableId").deleteRow(index);
 
 }
 
-updateLobby = function(idParam, usersParam){
- //console.log('Id to update is: ' + idParam);
+updateLobby = function(idParam, usersParam, activeParam){
 	var tr = document.getElementById(idParam);
 	tr.childNodes[1].innerHTML = usersParam;
-	//console.log('satte users från: ' + tr.childNodes[1] + 'till' + usersParam);
+	tr.childNodes[4].innerHTML = activeParam;
 }
 
-addNewLobby = function(nameParam, idParam, usersParam, maxParam, hasPasswordParam){
+addNewLobby = function(nameParam, idParam, usersParam, maxParam, hasPasswordParam, activeParam){
 	var tr = document.createElement('tr');
 	var lobbyId = document.createElement('td');
 	var lobbyName = document.createElement('td');
@@ -59,17 +56,20 @@ addNewLobby = function(nameParam, idParam, usersParam, maxParam, hasPasswordPara
 	var maxUsers = document.createElement('td');
 	var psw = document.createElement('td');
 	var tdButton = document.createElement('td');
+	var active = document.createElement('td');
 
 	lobbyName.innerHTML = nameParam;
 	users.innerHTML = usersParam;
 	maxUsers.innerHTML = maxParam;
 	psw.innerHTML = hasPasswordParam;
+	active.innerHTML = activeParam;
 	tr.id = idParam;
 
 	tr.appendChild(lobbyName);
 	tr.appendChild(users);
 	tr.appendChild(maxUsers);
 	tr.appendChild(psw);
+	tr.appendChild(active);
 
 	if (hasPasswordParam === "No") {
 		var joinbutton = document.createElement('button');
@@ -119,7 +119,6 @@ window.onclick = function(event) {
 }
 
 function setValue(id){
-	console.log("id is "+id);
   var form = document.getElementById("joinForm");
   form.join.value = id;
   document.forms["joinForm"].submit();

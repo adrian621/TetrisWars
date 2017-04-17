@@ -41,8 +41,9 @@ table{
 	position: fixed;
 	top: 250px;
 	text-align: center;
-	left: 40%;
-	padding: 2%;
+	left: 50%;
+	margin-left: -190px;
+	padding: 30px;
 	display: none;
 }
 
