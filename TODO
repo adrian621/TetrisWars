@@ -8,11 +8,10 @@ Antal spelare   1:a   2:a   3:a   4:a   5:a   6:a
 
 
 TODO
-VERSION 1
 Jessica
-* En användare går med i en lobby när den är igång/åskådare
+* Skriva ut game over
 * Skapa egna blockbilder
-* BUGGAR
+* Design för watchers
 
 Båda
 * Implementera Attacker
@@ -23,12 +22,15 @@ Adrian
 * Rankändring ?
 
 BUGS
-* Visar inte alla moves (men de görs) (när update och move sker samtidigt ?)
+* Fel får game över, men rätt står att den lämnat lobbyn - LÖST?
+* Next block åker på när man förlorar
 
-VERSION 2
+
+MÖJLIGA TILLÄGG TILL SENARE VERSION(ER)
 * Ljud (ljudeffekter, bakgrundsmusik)
-* LOGGA
+* LOGGA/LOGO
 * Vinnarpokaler
+* Få samma rankändring om de förlorar på samma update
 * Flytta när man håller inne en knapp
 * Karusellens pilar "fastnar"
 * Knapp för att sätta på/stänga av att folk får joina när det är igång ?
@@ -52,13 +54,7 @@ VERSION 2
 * Ladda upp profilbild
 * Chat i spelet/någon kommunication
 * Ändra maxplayers in game ?
-
-
-VERSION 3
 * Användarnamn får ej ha fula ord i sig (typ dickfuck)
 * Mer alternativ när man skapar en lobby (nivå/rank på spelare exempelvis)
 * Filter när man letar efter lobby
-
-
-VERSION ?
 * Spela mot dator?

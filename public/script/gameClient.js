@@ -71,8 +71,10 @@ getRankInfo = function(gameOvers, place){
 
 	if(index == -1){ // Not in there
 		rankInt = 1;
-	}else{
+	}else if(index >= 0){
 		rankInt = amountOfPlayers - index;
+	}else{
+		retrun -1;
 	}
 
 	switch (amountOfPlayers) {
@@ -95,7 +97,7 @@ getRankInfo = function(gameOvers, place){
 		pointsStr = "+"+pointsInt;
 		color = winnerTextColor;
 	}else if (pointsInt == 0){
-		pointsStr = ""+pointsInt;
+		pointsStr = "+"+pointsInt;
 		color = "gainsboro";
 	}else{
 		pointsStr = ""+pointsInt;
@@ -108,6 +110,7 @@ getRankInfo = function(gameOvers, place){
 drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayers, leavedLobby, withLefties){
 	var newPlayerPosition = JSON.parse(JSON.stringify(playerPosition));
 
+
 	if(withLefties == true){ //Those who have left the game
 		for(var i = 0; i< leavedLobby.length; i++){
 			if(leavedLobby[i] == true){
@@ -116,7 +119,7 @@ drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayer
 		}
 	}
 
-	dataList = getDataForOpponents(newPlayerPosition);
+	var dataList = getDataForOpponents(newPlayerPosition);
 	var x = 0;
 	var y = 0;
 	var blockSize = 0;
@@ -124,6 +127,11 @@ drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayer
 	var rankChange = "";
 	var rankText = "";
 	var rankColor = "";
+
+	console.log("Playerposition: "+playerPosition);
+	console.log("NewPlayerposition: "+newPlayerposition);
+	console.log("gameOvers: "+gameOvers);
+	console.log("leavedLobby: "+leavedLobby);
 
 	for(var i = 0; i< playerPosition.length; i++){
 		if(newPlayerPosition[i] == 1){
@@ -143,13 +151,17 @@ drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayer
 				}
 
 				var rankInfo = getRankInfo(gameOvers, i);
-				rankText = rankInfo[0];
-				rankChange = rankInfo[1];
-				rankColor = rankInfo[2];
+				if(rankInfo != -1){
+					rankText = rankInfo[0];
+					rankChange = rankInfo[1];
+					rankColor = rankInfo[2];
 
-				context.font = (px-10)+"px "+fontRegular;
-				context.fillStyle = rankColor;
-				context.fillText(rankText+" Place, "+rankChange+" rank", x, y-blockSize*5);
+					context.font = (px-6)+"px "+fontRegular;
+					context.fillStyle = rankColor;
+					context.fillText(rankText+" Place, "+rankChange+" rank", x, y-blockSize*5);
+				}
+			}else{
+				dataList.splice(0,1);
 			}
 		}
 	}
@@ -260,6 +272,45 @@ drawPlayerLeavedTextWatcher = function(place, playerPos){
 	context.fillText("Player Left Lobby", x, y);
 }
 
+drawGameOverText = function(place, playerPos){
+	var blockSize = 0;
+	var x = 0;
+	var y = 0;
+	var px = 0;
+	context.font = px+"px "+fontRegular;
+	context.fillStyle = staticTextColor;
+	context.fillText("Game Over", x, y);
+
+	if(board.place == place){
+		x = playerBoardX;
+		y = playerBoardY * blockSizePlayer*23;
+		blockSize = blockSizePlayer;
+		px = playerPx;
+	}
+	else{
+		var data = getDataForOpponent(place, playerPos);
+		blockSize = data[2];
+		x = data[0];
+		y = data[1] + blockSize*23;
+		px = data[3]-9;
+	}
+
+	context.font = (px-10)+"px "+fontRegular;
+	context.fillStyle = 'red';
+	context.fillText("Game Over", x, y-blockSize*5);
+}
+
+drawGameOverTextWatcher = function(place, playerPos){
+	var data = getDataForOneWatcher(place, playerPos);
+	var blockSize = data[2];
+	var x = data[0];
+	var y = data[1] + blockSize*23;
+	var px = data[3]-9;
+	context.font = px+"px "+fontRegular;
+	context.fillStyle = staticTextColor;
+	context.fillText("Game Over", x, y);
+}
+
 drawButton = function(place, buttonAdress, playerPosition){
 	if (place == board.place) {
 		var x = playerBoardX;
@@ -298,7 +349,7 @@ drawBoardAndButton = function(isReady, username, x, y, blockSize, px, drawButton
 }
 
 drawBoardsAndButtons = function(isReadys, usernames, playerPosition, leavedLobby){
-	dataList = getDataForOpponents(playerPosition);
+	var dataList = getDataForOpponents(playerPosition);
 	var x = 0;
 	var y = 0;
 	var blockSize = 0;
@@ -307,7 +358,9 @@ drawBoardsAndButtons = function(isReadys, usernames, playerPosition, leavedLobby
 
 	for(var i = 0; i< playerPosition.length; i++){
 		if(playerPosition[i] == 1){
+			console.log("my place is:"+board.place);
 			if(board.place == i){
+				console.log("My place! ("+i+")");
 				x = playerBoardX;
 				y = playerBoardY;
 				blockSize = blockSizePlayer;
@@ -327,7 +380,7 @@ drawBoardsAndButtons = function(isReadys, usernames, playerPosition, leavedLobby
 }
 
 drawBoardsAndUsernames = function(usernames, playerPosition){
-	dataList = getDataForOpponents(playerPosition);
+	var dataList = getDataForOpponents(playerPosition);
 	var x = 0;
 	var y = 0;
 	var blockSize = 0;
@@ -381,7 +434,7 @@ drawUsernames = function(playerPosition, usernames){
 }
 
 removeButtons = function(playerPosition){
-	dataList = getDataForOpponents(playerPosition);
+	var dataList = getDataForOpponents(playerPosition);
 	var x = 0;
 	var y = 0;
 	var blockSize = 0;
@@ -404,7 +457,7 @@ removeButtons = function(playerPosition){
 }
 
 drawButtons = function(playerPosition, leavedLobby){
-	dataList = getDataForOpponents(playerPosition);
+	var dataList = getDataForOpponents(playerPosition);
 	var x = 0;
 	var y = 0;
 	var blockSize = 0;
@@ -415,10 +468,12 @@ drawButtons = function(playerPosition, leavedLobby){
 				x = playerBoardX;
 				y = playerBoardY;
 				blockSize = blockSizePlayer;
-			}else{
+			}else if(leavedLobby == false){
 				x = dataList[0][0];
 				y = dataList[0][1];
 				blockSize = dataList[0][2]
+				dataList.splice(0,1);
+			}else{
 				dataList.splice(0,1);
 			}
 			drawPicture(notReadyButtonAdress, x, y+blockSize*21, blockSize*10, blockSize*4);
@@ -439,17 +494,20 @@ updateCanvasBoard = function(board, boardX, boardY, blockSize){
 }
 
 //Used when the server sends all boards
-updateCanvasBoards = function(boards, playerPosition){
-	var dataList = getDataForOpponents(playerPosition);
+updateCanvasBoards = function(boards, playerPosition, includeSelf){
+	console.log("Boards:");
+	console.log(boards);
 	for(var i = 0; i < boards.length; i++){
 		if(boards[i].place == board.place){
-			updateCanvasBoard(boards[i], playerBoardX, playerBoardY, blockSizePlayer);
+			if(includeSelf == true){
+				updateCanvasBoard(boards[i], playerBoardX, playerBoardY, blockSizePlayer);
+			}
 		}else{
-			var x = dataList[0][0];
-			var y = dataList[0][1];
-			var blockSize = dataList[0][2];
+			var data = getDataForOpponent(boards[i].place, playerPosition);
+			var x = data[0];
+			var y = data[1];
+			var blockSize = data[2];
 			updateCanvasBoard(boards[i], x, y, blockSize);
-			dataList.splice(0,1);
 		}
 	}
 }
@@ -611,7 +669,7 @@ resetCanvasBeforeGame = function(isReadys, usernames, playerPosition, boards, ga
 	drawNextBlockText();
 	drawAttacksText();
 	if(newPlayer == false){
-		updateCanvasBoards(boards, playerPosition);
+		updateCanvasBoards(boards, playerPosition, true);
 		drawWinnerAndRankchanges(playerPosition, boards, gameOvers, newPlayers, leavedLobby, false);
 	}
 }
@@ -695,7 +753,6 @@ window.onkeyup = function(e){
 //----- Socket Communication -----//
 socket.on('gameSetupR', function(data){
 	boardName = data.username;
-	boardNumber = data.place;
 	gameCore.addBoard(data, boards);
 	board = boards[0];
 	drawBoardsAndButtons(data.isReadys, data.usernames, data.playerPosition, data.leavedLobby);
@@ -708,13 +765,11 @@ socket.on('gameSetupR', function(data){
 });
 
 socket.on('joinGame', function(data){
+	console.log(data);
 	boardName = data.username;
-	boardNumber = data.place;
-	gameCore.addBoard(data, boards);
-	board = boards[0];
-	drawBoardsAndButtons(data.isReadys, data.usernames, data.playerPosition, data.leavedLobby);
-	drawNextBlockText();
-	drawAttacksText();
+	//gameCore.addBoard(data, boards);
+	board = data.boards[data.boards.length-1];
+	console.log(board);
 	addButtonEvent();
 });
 
@@ -726,6 +781,7 @@ socket.on('watch', function(data){
 });
 
 socket.on('newPlayer', function(data){
+	console.log("New player");
 	resetCanvasBeforeGame(data.isReadys, data.usernames, data.playerPosition, data.boards, data.gameOvers, data.leavedLobby, data.newPlayers);
 });
 
@@ -763,12 +819,12 @@ socket.on('startGame', function(data){
 
 socket.on('getStartBoards', function(data){
 	resetCanvasInGame(data.usernames, data.playerPosition);
-	updateCanvasBoards(data.boards, data.playerPosition);
+	updateCanvasBoards(data.boards, data.playerPosition, true);
 });
 
 socket.on('update', function(data){
 	update();
-	updateCanvasBoards(data.boards, data.playerPosition);
+	updateCanvasBoards(data.boards, data.playerPosition, false);
 });
 
 socket.on('watcherUpdate', function(data){
@@ -795,6 +851,15 @@ socket.on('invalidBoard', function(data){
 	console.log("Invalid move");
 	board = data.board;
 	updateCanvasBoard(board, playerBoardX, playerBoardY, blockSizePlayer);
+});
+
+socket.on('gameOver', function(data){
+	console.log("Game Over for "+data.tempPlace);
+	drawGameOverText(data.place, data.playerPosition);
+});
+
+socket.on('gameOverWatchers', function(data){
+	drawGameOverTextWatcher(data.place, data.playerPosition);
 });
 
 socket.on('winner', function(data){

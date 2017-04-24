@@ -104,7 +104,14 @@ update = function(lobby){
 
 	var newGameOvers = game_core.updateAllBoards(lobby.boards);
 
-	//TODO: if two users lose on same round, make them get same rank
+	console.log("gameOvers: "+newGameOvers);
+	var tempPlace = -1;
+	for(var i = 0; i < newGameOvers.length; i++){
+		tempPlace = newGameOvers[i];
+		game_server.emitToLobby(lobby, {type: 'gameOver', place:tempPlace, playerPosition:lobby.slotsTaken});
+		game_server.emitToWatchers(lobby, {type: 'gameOverWatchers', place:tempPlace, playerPosition:lobby.slotsTaken});
+	}
+	console.log("Still working");
 
 	lobby.gameOvers = lobby.gameOvers + newGameOvers;
 
@@ -149,20 +156,6 @@ endGame = function(lobby){
 		}
 	}
 
-	var authUser = null;
-	var lobbyId = null;
-	var socket = null;
-	for(var i = 0; i < lobby.waitingLine.length; i++){
-		authUser = lobby.waitingLine[0][1];
-		lobbyId = lobby.waitingLine[0][0];
-		socket = lobby.waitingClients[0];
-		lobby_server.addUserToLobby_new_export(authUser, lobbyId);
-		lobby.clients.push(socket);
-		lobby.waitingLine.splice(0,1);
-		lobby.waitingClients.splice(0,1);
-		socket.emit('joinGame', {playerPosition:lobby.slotsTaken, usernames:lobby.usernames, isReadys:lobby.isReadys, gameOvers: lobby.gameOvers, boards:lobby.boards, leavedLobby:lobby.leavedLobby});
-	}
-
 	for(i=0; i < lobby.slotsTaken.length; i++){
 		if(lobby.slotsTaken[i] == 1){
 			lobby.newPlayers[i] = false;
@@ -174,9 +167,20 @@ endGame = function(lobby){
 		lobby.lobbyUsers[i].isReady = false;
 	}
 
-	console.log("To emit");
-	game_server.emitToLobby(lobby, {type: 'newPlayer', playerPosition:lobby.slotsTaken, usernames:lobby.usernames, isReadys:lobby.isReadys, gameOvers: lobby.gameOvers, boards:lobby.boards, leavedLobby:lobby.leavedLobby});
-	console.log("After emit");
+	var authUser = null;
+	var lobbyId = null;
+	var socket = null;
+	for(var i = 0; i < lobby.waitingLine.length; i++){
+		authUser = lobby.waitingLine[0][1];
+		lobbyId = lobby.waitingLine[0][0];
+		socket = lobby.waitingClients[0];
+		lobby_server.addUserToLobby_new_export(authUser, lobbyId);
+		lobby.clients.push(socket);
+		lobby.waitingLine.splice(0,1);
+		lobby.waitingClients.splice(0,1);
+		socket.emit('joinGame', {playerPosition:lobby.slotsTaken, usernames:lobby.usernames, isReadys:lobby.isReadys, gameOvers: lobby.gameOvers, boards:lobby.boards, leavedLobby:lobby.leavedLobby, newPlayers:lobby.newPlayers});
+	}
+	game_server.emitToLobby(lobby, {type: 'newPlayer', playerPosition:lobby.slotsTaken, usernames:lobby.usernames, isReadys:lobby.isReadys, gameOvers: lobby.gameOvers, boards:lobby.boards, leavedLobby:lobby.leavedLobby, newPlayers:lobby.newPlayers});
 }
 
 game_server.startGame = function(lobby, data){

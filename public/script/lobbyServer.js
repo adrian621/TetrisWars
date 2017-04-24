@@ -116,7 +116,8 @@ createLobbyUser = function(lobby, authUser){
 	lobby.slotsTaken[place] = 1;
 	lobby.leavedLobby[place] = false;
 	lobby.newPlayers[place] = true;
-	tempActive = "No";
+	lobby.isReadys[place] = false;
+	var tempActive = "No";
 	if(lobby.isActive == true){
 		tempActive = "Yes";
 	}
@@ -375,9 +376,9 @@ userLeavedLobby = function(io, socket, data){
 		lobby.boards[indexUser].leaved = true;
 		lobby.gameOvers = lobby.gameOvers + place;
 		var index = lobby.gameOvers.indexOf(place);
-		lobby.gameOvers[index] = -1;
-		game_server.emitToLobby(lobby, {type: 'userLeavedLobby', active: lobby.isActive, playerPosition:lobby.slotsTaken, place:lobby.boards[indexUser].place});
-		game_server.emitToWatchers(lobby, {type: 'watcherUserLeavedLobby', active: lobby.isActive, playerPosition:lobby.slotsTaken, place:lobby.boards[indexUser].place});
+		lobby.gameOvers[index] = -4;
+		game_server.emitToLobby(lobby, {type: 'userLeavedLobby', active: lobby.isActive, playerPosition:lobby.slotsTaken, place:lobby.boards[indexUser].place, newPlayers:lobby.newPlayers});
+		game_server.emitToWatchers(lobby, {type: 'watcherUserLeavedLobby', active: lobby.isActive, playerPosition:lobby.slotsTaken, place:lobby.boards[indexUser].place, newPlayers:lobby.newPlayers});
 	}else{
 		lobby.boards.splice(indexUser, 1);
 		lobby.slotsTaken[place] = 0;
