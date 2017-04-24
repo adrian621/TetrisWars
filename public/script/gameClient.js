@@ -9,10 +9,10 @@ var intervalMove;
 var canMove = true;
 var bgColor = 'gainsboro';
 var boardName = "";
-var blockSizePlayer = 13;
+var blockSizePlayer = 14;
 var playerPx = 24;
 var playerBoardX = 80;
-var playerBoardY = 125;
+var playerBoardY = 110;
 var nextBlockX = playerBoardX + blockSizePlayer*13;
 var nextBlockY = playerBoardY + blockSizePlayer*3;
 var fontRegular = "Lucida Sans Unicode";
@@ -129,7 +129,7 @@ drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayer
 	var rankColor = "";
 
 	console.log("Playerposition: "+playerPosition);
-	console.log("NewPlayerposition: "+newPlayerposition);
+	console.log("NewPlayerposition: "+newPlayerPosition);
 	console.log("gameOvers: "+gameOvers);
 	console.log("leavedLobby: "+leavedLobby);
 
