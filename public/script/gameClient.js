@@ -2,7 +2,8 @@
 var socket = io();
 var boardNumber = -1;
 var newPlayer = true;
-var context = document.getElementById("game").getContext("2d");
+var canvas = document.getElementById("game");
+var context = canvas.getContext("2d");
 var boards = [];
 var board = [];
 var intervalMove;
@@ -60,7 +61,8 @@ drawJoinButton = function(){
 }
 
 getRankInfo = function(gameOvers, place){
-	var amountOfPlayers = gameOvers.length + 1;
+	var amountOfPlayers = gameOvers.length + 1; //+ winner
+	console.log("amountOfPlayers: "+amountOfPlayers);
 	var rankInt = 0;
 	var rankStr = "";
 	var pointsInt = 0;
@@ -74,7 +76,7 @@ getRankInfo = function(gameOvers, place){
 	}else if(index >= 0){
 		rankInt = amountOfPlayers - index;
 	}else{
-		retrun -1;
+		return -1;
 	}
 
 	switch (amountOfPlayers) {
@@ -129,7 +131,7 @@ drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayer
 	var rankColor = "";
 
 	console.log("Playerposition: "+playerPosition);
-	console.log("NewPlayerposition: "+newPlayerposition);
+	console.log("NewPlayerposition: "+newPlayerPosition);
 	console.log("gameOvers: "+gameOvers);
 	console.log("leavedLobby: "+leavedLobby);
 
@@ -168,6 +170,8 @@ drawWinnerAndRankchanges = function(playerPosition, boards, gameOvers, newPlayer
 }
 
 drawWinnerAndRankchangesWatcher = function(playerPosition, boards, gameOvers, newPlayers, leavedLobby, withLefties){
+	console.log("Is this ever run?");
+
 	var newPlayerPosition = JSON.parse(JSON.stringify(playerPosition));
 
 	if(withLefties == true){ //Those who have left the game
@@ -209,7 +213,6 @@ drawWinnerAndRankchangesWatcher = function(playerPosition, boards, gameOvers, ne
 }
 
 drawNextBlock = function(){
-	//drawNextBlockBox();
 	clearNextBlockBox();
 	var x = 0;
 	var y = 0;
@@ -254,8 +257,8 @@ drawPlayerLeavedText = function(place, playerPos){
 	var data = getDataForOpponent(place, playerPos);
 	var blockSize = data[2];
 	var x = data[0];
-	var y = data[1] + blockSize*23;
-	var px = data[3]-9;
+	var y = data[1] + blockSize*22;
+	var px = data[3]-4;
 	context.font = px+"px "+fontRegular;
 	context.fillStyle = staticTextColor;
 	context.fillText("Player Left Lobby", x, y);
@@ -265,8 +268,8 @@ drawPlayerLeavedTextWatcher = function(place, playerPos){
 	var data = getDataForOneWatcher(place, playerPos);
 	var blockSize = data[2];
 	var x = data[0];
-	var y = data[1] + blockSize*23;
-	var px = data[3]-9;
+	var y = data[1] + blockSize*22;
+	var px = data[3]-4;
 	context.font = px+"px "+fontRegular;
 	context.fillStyle = staticTextColor;
 	context.fillText("Player Left Lobby", x, y);
@@ -277,37 +280,35 @@ drawGameOverText = function(place, playerPos){
 	var x = 0;
 	var y = 0;
 	var px = 0;
-	context.font = px+"px "+fontRegular;
-	context.fillStyle = staticTextColor;
-	context.fillText("Game Over", x, y);
+	var data;
 
 	if(board.place == place){
-		x = playerBoardX;
-		y = playerBoardY * blockSizePlayer*23;
 		blockSize = blockSizePlayer;
+		x = playerBoardX;
+		y = playerBoardY + blockSize*22;
 		px = playerPx;
 	}
 	else{
-		var data = getDataForOpponent(place, playerPos);
+		data = getDataForOpponent(place, playerPos);
 		blockSize = data[2];
 		x = data[0];
-		y = data[1] + blockSize*23;
-		px = data[3]-9;
+		y = data[1] + blockSize*22;
+		px = data[3]-4;
 	}
 
-	context.font = (px-10)+"px "+fontRegular;
+	context.font = px+"px "+fontRegular;
 	context.fillStyle = 'red';
-	context.fillText("Game Over", x, y-blockSize*5);
+	context.fillText("Game Over", x, y);
 }
 
 drawGameOverTextWatcher = function(place, playerPos){
 	var data = getDataForOneWatcher(place, playerPos);
 	var blockSize = data[2];
 	var x = data[0];
-	var y = data[1] + blockSize*23;
-	var px = data[3]-9;
+	var y = data[1] + blockSize*22;
+	var px = data[3]-4;
 	context.font = px+"px "+fontRegular;
-	context.fillStyle = staticTextColor;
+	context.fillStyle = 'red';
 	context.fillText("Game Over", x, y);
 }
 
@@ -625,32 +626,11 @@ getDataForAllWatcher = function(playerPosition){
 			amountOfPlayers += 1;
 		}
 	}
+		console.log("amountOfPlayers: "+amountOfPlayers);
 
-	if(amountOfPlayers == 2){ // if there are 2 opponents
-		blockSize = blockSizePlayer;
-		distanceBetweenOpponents = 300;
-		px = playerPx;
-	}
-	else if(amountOfPlayers == 3){ //if there are 3 opponents
-		blockSize = 11;
-		distanceBetweenOpponents = 75;
-		px = 18;
-	}
-	else if(amountOfPlayers == 4){ //if there are 3 opponents
-		blockSize = 10;
-		distanceBetweenOpponents = 68;
-		px = 17;
-	}
-	else if(amountOfPlayers == 5){ //if there are 3 opponents
-		blockSize = 8;
-		distanceBetweenOpponents = 40;
-		px = 16;
-	}
-	else if(amountOfPlayers == 6){ //if there are 3 opponents
-		blockSize = 7;
-		distanceBetweenOpponents = 25;
-		px = 15;
-	}
+	blockSize = blockSizePlayer + 2 - amountOfPlayers;
+	px = playerPx + 2 - amountOfPlayers;
+	distanceBetweenOpponents = (canvas.width - playerBoardX*2 - amountOfPlayers*(blockSize*10))/(amountOfPlayers-1);
 
 	for(var i = 0; i< playerPosition.length; i++){
 		if(playerPosition[i] == 1){
@@ -854,7 +834,7 @@ socket.on('invalidBoard', function(data){
 });
 
 socket.on('gameOver', function(data){
-	console.log("Game Over for "+data.tempPlace);
+	console.log("Game Over for "+data.place);
 	drawGameOverText(data.place, data.playerPosition);
 });
 

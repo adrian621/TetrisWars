@@ -51,15 +51,18 @@
 			addCurrentToAllBlocks(board);
 			fullRowControll(board);
 			board.currentBlocks = [];
-			board.nextBlocks = [];
-			createTetromino(board.currentBlocks, "current", board);
-			createTetromino(board.nextBlocks, "next", board);
-			newTetro = true;
+
+			if(gameOver(board) == true){
+				console.log("New game over!");
+				board.isActive = false;
+			}else{
+				board.nextBlocks = [];
+				createTetromino(board.currentBlocks, "current", board);
+				createTetromino(board.nextBlocks, "next", board);
+				newTetro = true;
+			}
 		}else{
 			moveBlocks(40, board);
-		}
-		if(gameOver(board) == true){
-			board.isActive = false;
 		}
 		return newTetro;
 	}

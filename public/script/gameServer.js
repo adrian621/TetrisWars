@@ -103,15 +103,12 @@ update = function(lobby){
 	}
 
 	var newGameOvers = game_core.updateAllBoards(lobby.boards);
-
-	console.log("gameOvers: "+newGameOvers);
 	var tempPlace = -1;
 	for(var i = 0; i < newGameOvers.length; i++){
 		tempPlace = newGameOvers[i];
 		game_server.emitToLobby(lobby, {type: 'gameOver', place:tempPlace, playerPosition:lobby.slotsTaken});
 		game_server.emitToWatchers(lobby, {type: 'gameOverWatchers', place:tempPlace, playerPosition:lobby.slotsTaken});
 	}
-	console.log("Still working");
 
 	lobby.gameOvers = lobby.gameOvers + newGameOvers;
 

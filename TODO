@@ -8,25 +8,17 @@ Antal spelare   1:a   2:a   3:a   4:a   5:a   6:a
 
 
 TODO
-Jessica
-* Skriva ut game over
+* Rankändring för databasen
 * Skapa egna blockbilder
-* Design för watchers
-
-Båda
 * Implementera Attacker
 * Karusellens bilder
 * Testning
 
-Adrian
-* Rankändring ?
-
-BUGS
-* Fel får game över, men rätt står att den lämnat lobbyn - LÖST?
-* Next block åker på när man förlorar
+BUGGAR
+* När aktiv spelare går ut och in får en existerande spelare fel place
 
 
-MÖJLIGA TILLÄGG TILL SENARE VERSION(ER)
+MÖJLIGA TILLÄGG TILL SENARE VERSIONER
 * Ljud (ljudeffekter, bakgrundsmusik)
 * LOGGA/LOGO
 * Vinnarpokaler
