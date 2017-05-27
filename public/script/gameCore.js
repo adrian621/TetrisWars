@@ -11,6 +11,7 @@
 
 	exports.startGameBoard = function(board){
 		createTetromino(board.currentBlocks, "current", board);
+		createTetromino(board.nextBlocks, "next", board);
 		board.isActive = true;
 	};
 
@@ -44,18 +45,26 @@
 	}
 
 	exports.updateBoard = function(board){
+		var newTetro = false;
 		board.time = board.time + 1;
 		if(collideDown(board)){
 			addCurrentToAllBlocks(board);
 			fullRowControll(board);
 			board.currentBlocks = [];
-			createTetromino(board.currentBlocks, "current", board);
+
+			if(gameOver(board) == true){
+				console.log("New game over!");
+				board.isActive = false;
+			}else{
+				board.nextBlocks = [];
+				createTetromino(board.currentBlocks, "current", board);
+				createTetromino(board.nextBlocks, "next", board);
+				newTetro = true;
+			}
 		}else{
 			moveBlocks(40, board);
 		}
-		if(gameOver(board) == true){
-			board.isActive = false;
-		}
+		return newTetro;
 	}
 
 }(typeof exports === 'undefined'? this.gameCore = {}: exports));
@@ -79,7 +88,7 @@ createIPiece = function(list, typeOf, board){
 	if(typeOf == "current"){
 		board.currentBlockType = 'i';
 	}else{
-		nextBlockType = 'i';
+		board.nextBlockType = 'i';
 	}
 }
 
@@ -103,14 +112,14 @@ changeI = function(form, board){
 }
 
 createOPiece = function(list, typeOf, board){
+	Block(board.width/2-1, 0, 'yellow', list);
+	Block(board.width/2-1, 1, 'yellow', list);
 	Block(board.width/2, 0, 'yellow', list);
-	Block(board.width/2, 0 + 1, 'yellow', list);
-	Block(board.width/2 + 1, 0, 'yellow', list);
-	Block(board.width/2 + 1, 1, 'yellow', list);
+	Block(board.width/2, 1, 'yellow', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'o';
 	}else{
-		nextBlockType = 'o';
+		board.nextBlockType = 'o';
 	}
 }
 
@@ -122,7 +131,7 @@ createTPiece = function(list, typeOf, board){
 	if(typeOf == "current"){
 		board.currentBlockType = 't';
 	}else{
-		nextBlockType = 't';
+		board.nextBlockType = 't';
 	}
 }
 
@@ -168,7 +177,7 @@ createSPiece = function(list, typeOf, board){
 	if(typeOf == "current"){
 		board.currentBlockType = 's';
 	}else{
-		nextBlockType = 's';
+		board.nextBlockType = 's';
 	}
 }
 
@@ -192,7 +201,7 @@ createZPiece = function(list, typeOf, board){
 	if(typeOf == "current"){
 		board.currentBlockType = 'z';
 	}else{
-		nextBlockType = 'z';
+		board.nextBlockType = 'z';
 	}
 }
 
@@ -207,14 +216,14 @@ changeZ = function(form, board){
 }
 
 createJPiece = function(list, typeOf, board){
-	Block(0 + board.width/2, 0, 'orange', list);
-	Block(0 + board.width/2, 1, 'orange', list);
+	Block(0 + board.width/2-1, 0, 'orange', list);
+	Block(0 + board.width/2-1, 1, 'orange', list);
+	Block(0 + board.width/2-1, 2, 'orange', list);
 	Block(0 + board.width/2, 2, 'orange', list);
-	Block(0 + board.width/2 + 1, 2, 'orange', list);
 	if(typeOf == "current"){
 		board.currentBlockType = 'j';
 	}else{
-		nextBlockType = 'j';
+		board.nextBlockType = 'j';
 	}
 }
 
@@ -257,7 +266,7 @@ createLPiece = function(list, typeOf, board){
 	if(typeOf == "current"){
 		board.currentBlockType = 'l';
 	}else{
-		nextBlockType = 'l';
+		board.nextBlockType = 'l';
 	}
 }
 
@@ -293,20 +302,25 @@ changeL= function(form, board){
 }
 
 createTetromino = function(list, typeOf, board){
-		var rand = board.randomNumbers[board.randomNumbersCounter];
+	var rand = 0;
+	if (typeOf === "current") {
+		rand = board.randomNumbers[board.randomNumbersCounter];
 		board.randomNumbersCounter +=1;
-		switch(rand){
-			case 1: createIPiece(list, typeOf, board); break;
-			case 2: createOPiece(list, typeOf, board); break;
-			case 3: createTPiece(list, typeOf, board); break;
-			case 4: createSPiece(list, typeOf, board); break;
-			case 5: createZPiece(list, typeOf, board); break;
-			case 6: createJPiece(list, typeOf, board); break;
-			case 7: //Goes to case 0
-			case 0: createLPiece(list, typeOf, board); break;
-		}
 		board.currentBlockForm = 0;
-	};
+	}else{
+		rand = board.randomNumbers[board.randomNumbersCounter];
+	}
+	switch(rand){
+		case 1: createIPiece(list, typeOf, board); break;
+		case 2: createOPiece(list, typeOf, board); break;
+		case 3: createTPiece(list, typeOf, board); break;
+		case 4: createSPiece(list, typeOf, board); break;
+		case 5: createZPiece(list, typeOf, board); break;
+		case 6: createJPiece(list, typeOf, board); break;
+		case 7: //Goes to case 0
+		case 0: createLPiece(list, typeOf, board); break;
+	}
+};
 
 changeCorrectForm = function(form, board){
 	switch(board.currentBlockType){
@@ -474,6 +488,7 @@ Board = function(data, boards, place){
 		currentBlocks: [],
 		currentBlockType: 'a',
 		currentBlockForm: 0,
+		nextBlocks: [],
 		nextBlockType: 'a',
 		randomNumbers: data.randomNumbers,
 		randomNumbersCounter: 0,
@@ -482,7 +497,9 @@ Board = function(data, boards, place){
 		place: place,
 		playerPosition: data.playerPosition,
 		time: 0,
-		id: data.id
+		id: data.id,
+		leaved: false,
+		winner: false
 	};
 	boards[boards.length] = board;
 }
